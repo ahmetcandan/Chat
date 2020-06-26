@@ -8,6 +8,9 @@ namespace Chat.Core
 {
     public delegate void dgConnectionClosed();
     public delegate void dgNewMessageReceived(MessageReceivingArguments e);
+    public delegate void dgNewClientConnected(Client.ChatClient client);
+    public delegate void dgNewClientDisconnected(Client.ChatClient client);
+    public delegate void dgClientListRefresh(List<ClientItem> clients);
 
     public class MessageReceivingArguments : EventArgs
     {
@@ -22,5 +25,11 @@ namespace Chat.Core
         {
             this.message = message;
         }
+    }
+
+    public class ClientItem
+    {
+        public long ClientId { get; set; }
+        public string Nick { get; set; }
     }
 }

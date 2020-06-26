@@ -16,6 +16,7 @@ namespace ChatClient
     public partial class frmMain : Form
     {
         bool start = false;
+        bool hasConnection = false;
         public frmMain()
         {
             InitializeComponent();
@@ -31,11 +32,22 @@ namespace ChatClient
                 return;
             }
             Session.Client.NewMessgeReceived += new dgNewMessageReceived(newMessageReceived);
+            Session.Client.ClientListRefresh += new dgClientListRefresh(clientListRefresh);
         }
 
         public void newMessageReceived(MessageReceivingArguments e)
         {
             Invoke(new dgNewMessageReceived(newMessage), e);
+        }
+
+        public void clientListRefresh(List<ClientItem> clients)
+        {
+            Invoke(new dgClientListRefresh(refreshClientList), clients);
+        }
+
+        private void refreshClientList(List<ClientItem> clients)
+        {
+
         }
 
         private void newMessage(MessageReceivingArguments e)
@@ -48,10 +60,13 @@ namespace ChatClient
             Session.Client.SendMessage(txtMessage.Text);
         }
 
-        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Session.Client != null)
-                Session.Client.Disconnected();
+            if (Session.HasConnection)
+            {
+                if (Session.Client != null)
+                    Session.Client.Disconnected();
+            }
         }
     }
 }

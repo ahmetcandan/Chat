@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Chat.Core.Server;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +32,9 @@ namespace Chat.Core.Client
         private int serverPort;
         public event dgConnectionClosed CloseConnected;
         public event dgNewMessageReceived NewMessgeReceived;
+        public event dgNewClientConnected NewClientConnected;
+        public event dgNewClientDisconnected ClientDisconnected;
+        public event dgClientListRefresh ClientListRefresh;
 
         private Socket clientConnection;
         private NetworkStream networkStream;
@@ -55,11 +59,12 @@ namespace Chat.Core.Client
                 networkStream = new NetworkStream(clientConnection);
                 binaryReader = new BinaryReader(networkStream, Encoding.BigEndianUnicode);
                 binaryWriter = new BinaryWriter(networkStream, Encoding.BigEndianUnicode);
-                thread = new Thread(new ThreadStart(wRun));
+                thread = new Thread(new ThreadStart(tRun));
                 working = true;
                 thread.Start();
 
-                SetNick(nick);
+
+                login(nick);
                 return true;
             }
             catch (Exception)
@@ -72,6 +77,7 @@ namespace Chat.Core.Client
         {
             try
             {
+                sendCommand(Cmd.Logout);
                 working = false;
                 clientConnection.Close();
                 thread.Join();
@@ -80,6 +86,11 @@ namespace Chat.Core.Client
             {
 
             }
+        }
+
+        private bool login(string nick)
+        {
+            return sendCommand(Cmd.Login, nick);
         }
 
         public bool SendMessage(string message)
@@ -91,6 +102,11 @@ namespace Chat.Core.Client
         {
             nick = nickName;
             return sendCommand(Cmd.SetNick, nickName);
+        }
+
+        private bool sendCommand(Cmd cmd)
+        {
+            return sendCommand(cmd, string.Empty);
         }
 
         private bool sendCommand(Cmd cmd, string content)
@@ -113,7 +129,7 @@ namespace Chat.Core.Client
             }
         }
 
-        private void wRun()
+        private void tRun()
         {
             while (working)
             {
@@ -125,20 +141,26 @@ namespace Chat.Core.Client
                     List<byte> bList = new List<byte>();
                     while ((b = binaryReader.ReadByte()) != END_BYTE)
                         bList.Add(b);
-                    string resul = Encoding.BigEndianUnicode.GetString(bList.ToArray());
-                    Command command = JsonConvert.DeserializeObject<Command>(resul);
+                    string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
+                    Command command = JsonConvert.DeserializeObject<Command>(result);
                     switch (command.Cmd)
                     {
                         case Cmd.Message:
-                            yeniMesajAlindiTetikle(command.Content);
+                            newMessageReceivedTrigger(command.Content);
                             break;
                         case Cmd.Login:
+                            newClientConnectTrigger(this);
                             break;
                         case Cmd.Logout:
+                            clientDisconnectedTrigger(this);
                             break;
                         case Cmd.SetNick:
                             break;
                         case Cmd.Command:
+                            break;
+                        case Cmd.UserList:
+                            List<ClientItem> clients = JsonConvert.DeserializeObject<List<ClientItem>>(command.Content);
+                            clientListRefreshTrigger(clients);
                             break;
                         default:
                             break;
@@ -159,10 +181,28 @@ namespace Chat.Core.Client
                 CloseConnected();
         }
 
-        private void yeniMesajAlindiTetikle(string message)
+        private void newMessageReceivedTrigger(string message)
         {
             if (NewMessgeReceived != null)
                 NewMessgeReceived(new MessageReceivingArguments(message));
+        }
+
+        private void newClientConnectTrigger(ChatClient client)
+        {
+            if (NewClientConnected != null)
+                NewClientConnected(client);
+        }
+
+        private void clientDisconnectedTrigger(ChatClient client)
+        {
+            if (ClientDisconnected != null)
+                ClientDisconnected(client);
+        }
+
+        private void clientListRefreshTrigger(List<ClientItem> clients)
+        {
+            if (ClientListRefresh != null)
+                ClientListRefresh(clients);
         }
     }
 }

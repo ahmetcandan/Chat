@@ -22,21 +22,57 @@ namespace ChatClient
 
         private bool validation()
         {
-            if (!int.TryParse(txtPortNo.Text, out portNo))
+            bool result = true;
+            if (string.IsNullOrEmpty(txtIPAddress.Text))
+            {
+                errorProvider1.SetError(txtIPAddress, "Cannot be empty");
+                result =  false;
+            }
+            if (string.IsNullOrEmpty(txtNick.Text))
+            {
+                errorProvider1.SetError(txtIPAddress, "Cannot be empty");
+                result = false;
+            }
+            if (string.IsNullOrEmpty(txtPortNo.Text))
+            {
+                errorProvider1.SetError(txtIPAddress, "Cannot be empty");
+                result = false;
+            }
+            else if (!int.TryParse(txtPortNo.Text, out portNo))
             {
                 errorProvider1.SetError(txtPortNo, "Not valid Port No");
-                return false;
+                result = false;
             }
-            return true;
+            else if (portNo > 100 && portNo < 65536)
+            {
+                errorProvider1.SetError(txtPortNo, "Not valid Port No");
+                result = false;
+            }
+            return result;
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
             if (validation())
             {
-                Session.Client = new Chat.Core.Client.ChatClient(txtIPAddress.Text, portNo, txtNick.Text);
-                Session.Client.Connect();
-                Close();
+                try
+                {
+                    Session.Client = new Chat.Core.Client.ChatClient(txtIPAddress.Text, portNo, txtNick.Text);
+                    if (Session.Client.Connect())
+                    {
+                        Session.HasConnection = true;
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Connection to the server failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Session.HasConnection = false;
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

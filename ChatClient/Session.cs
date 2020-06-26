@@ -9,5 +9,6 @@ namespace ChatClient
     public static class Session
     {
         public static Chat.Core.Client.ChatClient Client;
+        public static bool HasConnection = false;
     }
 }

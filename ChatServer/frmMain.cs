@@ -13,7 +13,7 @@ namespace ChatServer
 {
     public partial class frmMain : Form
     {
-        Chat.Core.Server.ChatServer sunucu;
+        Chat.Core.Server.ChatServer server;
         bool start = false;
         public frmMain()
         {
@@ -22,9 +22,7 @@ namespace ChatServer
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            sunucu = new Chat.Core.Server.ChatServer(12079);
-            sunucu.NewMessageReceivedFromClient += new dgNewMessageReceivedFromClient(newMessageReceivedFromClient);
-            sunucu.ClientConnectionClosed += new dgClientConnectionClosed(clientConnectionClosed);
+
         }
 
         private void clientConnectionClosed(ClientConnectionArguments e)
@@ -53,14 +51,35 @@ namespace ChatServer
             {
                 if (!start)
                 {
-                    sunucu.Start();
+                    int portNo = 0;
+                    if (string.IsNullOrEmpty(txtPortNo.Text))
+                    {
+                        errorProvider1.SetError(txtPortNo, "Cannot be empty");
+                        return;
+                    }
+                    else if (!int.TryParse(txtPortNo.Text, out portNo))
+                    {
+                        errorProvider1.SetError(txtPortNo, "Not valid Port No");
+                        return;
+                    }
+                    else if (portNo > 100 && portNo < 65536)
+                    {
+                        errorProvider1.SetError(txtPortNo, "Not valid Port No");
+                        return;
+                    }
+
+                    server = new Chat.Core.Server.ChatServer(portNo);
+                    server.NewMessageReceivedFromClient += new dgNewMessageReceivedFromClient(newMessageReceivedFromClient);
+                    server.ClientConnectionClosed += new dgClientConnectionClosed(clientConnectionClosed);
+
+                    server.Start();
                     btnStart.Text = "Stop";
                     btnStart.BackColor = Color.Crimson;
                     BackColor = Color.GhostWhite;
                 }
                 else
                 {
-                    sunucu.Stop();
+                    server.Stop();
                     btnStart.Text = "Start";
                     btnStart.BackColor = Color.LimeGreen;
                     BackColor = Color.AliceBlue;
@@ -73,6 +92,17 @@ namespace ChatServer
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (server != null)
+                server.Stop();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 

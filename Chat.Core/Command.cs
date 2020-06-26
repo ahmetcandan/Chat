@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.Core.Client
+namespace Chat.Core
 {
     public class Command
     {
@@ -18,6 +18,7 @@ namespace Chat.Core.Client
         Login = 2,
         Logout = 3,
         SetNick = 4,
-        Command = 5
+        Command = 5,
+        UserList = 6
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Chat.Core.Server
         public event dgNewMessageReceivedFromClient NewMessageReceivedFromClient;
 
         private long lastClientId = 0;
-        private SortedList<long, Client> clients;
+        public SortedList<long, Client> Clients { get; set; }
         private volatile bool working;
         private object objSenk = new object();
         private ConnectionListener connectionListener;
@@ -29,7 +30,7 @@ namespace Chat.Core.Server
         public ChatServer(int port)
         {
             this.port = port;
-            this.clients = new SortedList<long, Client>();
+            this.Clients = new SortedList<long, Client>();
             this.connectionListener = new ConnectionListener(this, port);
         }
 
@@ -48,7 +49,7 @@ namespace Chat.Core.Server
             working = false;
             try
             {
-                IList<Client> istemciListesi = clients.Values;
+                IList<Client> istemciListesi = Clients.Values;
                 foreach (Client ist in istemciListesi)
                     ist.Stop();
             }
@@ -56,7 +57,7 @@ namespace Chat.Core.Server
             {
 
             }
-            clients.Clear();
+            Clients.Clear();
             working = false;
         }
 
@@ -71,7 +72,7 @@ namespace Chat.Core.Server
             lock (objSenk)
             {
                 istemci = new Client(this, clientSocket, ++lastClientId);
-                clients.Add(istemci.ClientId, istemci);
+                Clients.Add(istemci.ClientId, istemci);
             }
             istemci.Start();
             if (NewClientConnected != null)
@@ -90,8 +91,8 @@ namespace Chat.Core.Server
                 ClientConnectionClosed(new ClientConnectionArguments(client));
             if (working)
                 lock (objSenk)
-                    if (clients.ContainsKey(client.ClientId))
-                        clients.Remove(client.ClientId);
+                    if (Clients.ContainsKey(client.ClientId))
+                        Clients.Remove(client.ClientId);
         }
 
         private class ConnectionListener
@@ -191,7 +192,7 @@ namespace Chat.Core.Server
             }
         }
 
-        private class Client : IClient
+        public class Client : IClient
         {
             private const byte START_BYTE = (byte)60;
             private const byte END_BYTE = (byte)62;
@@ -264,11 +265,17 @@ namespace Chat.Core.Server
                 this.Stop();
             }
 
-            public bool SendMessage(string mesaj)
+            public bool SendMessage(string message)
+            {
+                return sendCommand(Cmd.Message, message);
+            }
+
+            private bool sendCommand(Cmd cmd, string content)
             {
                 try
                 {
-                    byte[] bMesaj = System.Text.Encoding.BigEndianUnicode.GetBytes(mesaj);
+                    string _result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
+                    byte[] bMesaj = Encoding.BigEndianUnicode.GetBytes(_result);
                     byte[] b = new byte[bMesaj.Length + 2];
                     Array.Copy(bMesaj, 0, b, 1, bMesaj.Length);
                     b[0] = START_BYTE;
@@ -295,9 +302,26 @@ namespace Chat.Core.Server
                         List<byte> bList = new List<byte>();
                         while ((b = binaryReader.ReadByte()) != END_BYTE)
                             bList.Add(b);
-                        string mesaj = System.Text.Encoding.BigEndianUnicode.GetString(bList.ToArray());
-                        server.newMessageReceivedFromClient(this, mesaj);
-                        newMessageReceived_event(mesaj);
+                        string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
+                        Command command = JsonConvert.DeserializeObject<Command>(result);
+                        switch (command.Cmd)
+                        {
+                            case Cmd.Message:
+                                server.newMessageReceivedFromClient(this, command.Content);
+                                newMessageReceived_event(command.Content);
+                                break;
+                            case Cmd.Login:
+                                sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
+                                break;
+                            case Cmd.Logout:
+                                break;
+                            case Cmd.SetNick:
+                                break;
+                            case Cmd.Command:
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     catch (Exception)
                     {
