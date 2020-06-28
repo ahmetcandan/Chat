@@ -47,12 +47,20 @@ namespace ChatClient
 
         private void refreshClientList(List<ClientItem> clients)
         {
-
+            lvClients.Items.Clear();
+            foreach (var client in clients)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Text = client.ClientId.ToString();
+                item.SubItems.Add(client.Nick);
+                item.SubItems.Add("");
+                lvClients.Items.Add(item);
+            }
         }
 
         private void newMessage(MessageReceivingArguments e)
         {
-            txtMessages.Text += @"\n" + e.Message;
+            txtMessages.Text += $@"\n{e.Message.From}: {e.Message.Content}";
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)

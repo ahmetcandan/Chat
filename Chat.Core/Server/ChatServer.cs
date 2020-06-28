@@ -49,9 +49,9 @@ namespace Chat.Core.Server
             working = false;
             try
             {
-                IList<Client> istemciListesi = Clients.Values;
-                foreach (Client ist in istemciListesi)
-                    ist.Stop();
+                IList<Client> clientList = Clients.Values;
+                foreach (Client clt in clientList)
+                    clt.Stop();
             }
             catch (Exception)
             {
@@ -68,18 +68,18 @@ namespace Chat.Core.Server
 
         private void newClientSocketConnected(Socket clientSocket)
         {
-            Client istemci = null;
+            Client client = null;
             lock (objSenk)
             {
-                istemci = new Client(this, clientSocket, ++lastClientId);
-                Clients.Add(istemci.ClientId, istemci);
+                client = new Client(this, clientSocket, ++lastClientId);
+                Clients.Add(client.ClientId, client);
             }
-            istemci.Start();
+            client.Start();
             if (NewClientConnected != null)
-                NewClientConnected(new ClientConnectionArguments(istemci));
+                NewClientConnected(new ClientConnectionArguments(client));
         }
 
-        private void newMessageReceivedFromClient(Client client, string message)
+        private void newMessageReceivedFromClient(Client client, Message message)
         {
             if (NewMessageReceivedFromClient != null)
                 NewMessageReceivedFromClient(new ClientSendMessageArguments(client, message));
@@ -197,12 +197,12 @@ namespace Chat.Core.Server
             private const byte START_BYTE = (byte)60;
             private const byte END_BYTE = (byte)62;
 
-            public long ClientId
-            {
-                get { return clientId; }
-            }
+            public long ClientId { get { return clientId; } }
+            private long clientId;
             public string Nick { get { return nick; } }
             private string nick;
+            public string IPAddress { get { return ipAddress; } }
+            private string ipAddress;
 
             public bool HasConnection
             {
@@ -213,7 +213,6 @@ namespace Chat.Core.Server
 
             private Socket soket;
             private ChatServer server;
-            private long clientId;
             private NetworkStream networkStram;
             private BinaryReader binaryReader;
             private BinaryWriter binaryWriter;
@@ -267,7 +266,7 @@ namespace Chat.Core.Server
 
             public bool SendMessage(string message)
             {
-                return sendCommand(Cmd.Message, message);
+                return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
             }
 
             private bool sendCommand(Cmd cmd, string content)
@@ -299,6 +298,7 @@ namespace Chat.Core.Server
                         byte b = binaryReader.ReadByte();
                         if (b != START_BYTE)
                             continue;
+                        ClientItem clientItem;
                         List<byte> bList = new List<byte>();
                         while ((b = binaryReader.ReadByte()) != END_BYTE)
                             bList.Add(b);
@@ -307,17 +307,36 @@ namespace Chat.Core.Server
                         switch (command.Cmd)
                         {
                             case Cmd.Message:
-                                server.newMessageReceivedFromClient(this, command.Content);
-                                newMessageReceived_event(command.Content);
+                                Message message = JsonConvert.DeserializeObject<Message>(command.Content);
+                                server.newMessageReceivedFromClient(this, message);
+                                if (message.To == 0)
+                                    foreach (var item in server.Clients)
+                                        item.Value.sendCommand(command.Cmd, command.Content);
+                                else
+                                    foreach (var item in server.Clients.Where(c => c.Key == message.To || c.Key == message.From))
+                                        item.Value.sendCommand(command.Cmd, command.Content);
+
                                 break;
                             case Cmd.Login:
-                                sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
+                                clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
+                                nick = clientItem.Nick;
+                                ipAddress = clientItem.IPAddress;
+                                foreach (var item in server.Clients)
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
                                 break;
                             case Cmd.Logout:
+                                clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
+                                foreach (var item in server.Clients)
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
                                 break;
                             case Cmd.SetNick:
+                                nick = command.Content;
+                                foreach (var item in server.Clients)
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
                                 break;
                             case Cmd.Command:
+                                break;
+                            case Cmd.UserList:
                                 break;
                             default:
                                 break;
@@ -350,7 +369,7 @@ namespace Chat.Core.Server
                     connectionClosed();
             }
 
-            private void newMessageReceived_event(string message)
+            internal void newMessageReceived_event(Message message)
             {
                 if (newMessageReceived != null)
                     newMessageReceived(new MessageReceivingArguments(message));

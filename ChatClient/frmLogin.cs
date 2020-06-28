@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,7 +44,7 @@ namespace ChatClient
                 errorProvider1.SetError(txtPortNo, "Not valid Port No");
                 result = false;
             }
-            else if (portNo > 100 && portNo < 65536)
+            else if (portNo < 100 && portNo > 65536)
             {
                 errorProvider1.SetError(txtPortNo, "Not valid Port No");
                 result = false;
@@ -57,7 +58,9 @@ namespace ChatClient
             {
                 try
                 {
-                    Session.Client = new Chat.Core.Client.ChatClient(txtIPAddress.Text, portNo, txtNick.Text);
+                    string hostName = Dns.GetHostName();
+                    var addressList = Dns.GetHostByName(hostName).AddressList;
+                    Session.Client = new Chat.Core.Client.ChatClient(txtIPAddress.Text, portNo, txtNick.Text, addressList.Length > 0 ? addressList[0].ToString() : hostName);
                     if (Session.Client.Connect())
                     {
                         Session.HasConnection = true;

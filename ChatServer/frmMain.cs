@@ -42,7 +42,7 @@ namespace ChatServer
 
         private void newMessage(ClientSendMessageArguments e)
         {
-            txtMessages.Text += $"\n{e.Client.Nick} {e.Message}";
+            txtMessages.Text += $"\n{e.Client.Nick}: {e.Message.Content}";
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -62,7 +62,7 @@ namespace ChatServer
                         errorProvider1.SetError(txtPortNo, "Not valid Port No");
                         return;
                     }
-                    else if (portNo > 100 && portNo < 65536)
+                    else if (portNo < 100 && portNo > 65535)
                     {
                         errorProvider1.SetError(txtPortNo, "Not valid Port No");
                         return;
@@ -96,7 +96,7 @@ namespace ChatServer
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (server != null)
+            if (start && server != null)
                 server.Stop();
         }
 

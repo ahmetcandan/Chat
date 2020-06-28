@@ -8,22 +8,23 @@ namespace Chat.Core
 {
     public delegate void dgConnectionClosed();
     public delegate void dgNewMessageReceived(MessageReceivingArguments e);
-    public delegate void dgNewClientConnected(Client.ChatClient client);
-    public delegate void dgNewClientDisconnected(Client.ChatClient client);
+    public delegate void dgNewClientConnected(ClientItem client);
+    public delegate void dgNewClientDisconnected(ClientItem client);
     public delegate void dgClientListRefresh(List<ClientItem> clients);
 
     public class MessageReceivingArguments : EventArgs
     {
-        public string Message
-        {
-            get { return message; }
-            set { message = value; }
-        }
-        private string message;
+        public Message GetMessage()
+        { return Message; }
+        public void SetMessage(Message value)
+        { Message = value; }
+        private Message message;
 
-        public MessageReceivingArguments(string message)
+        public Message Message { get => message; set => message = value; }
+
+        public MessageReceivingArguments(Message message)
         {
-            this.message = message;
+            this.Message = message;
         }
     }
 
@@ -31,5 +32,6 @@ namespace Chat.Core
     {
         public long ClientId { get; set; }
         public string Nick { get; set; }
+        public string IPAddress { get; set; }
     }
 }

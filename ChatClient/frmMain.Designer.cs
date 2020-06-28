@@ -32,7 +32,7 @@
             this.txtMessages = new System.Windows.Forms.TextBox();
             this.btnSendMessage = new System.Windows.Forms.Button();
             this.txtMessage = new System.Windows.Forms.TextBox();
-            this.lvUsers = new System.Windows.Forms.ListView();
+            this.lvClients = new System.Windows.Forms.ListView();
             this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ipAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
@@ -76,23 +76,23 @@
             this.txtMessage.TabIndex = 7;
             this.txtMessage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // lvUsers
+            // lvClients
             // 
-            this.lvUsers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lvClients.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvUsers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lvClients.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nickName,
             this.ipAddress});
-            this.lvUsers.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lvUsers.FullRowSelect = true;
-            this.lvUsers.GridLines = true;
-            this.lvUsers.HideSelection = false;
-            this.lvUsers.Location = new System.Drawing.Point(547, 12);
-            this.lvUsers.Name = "lvUsers";
-            this.lvUsers.Size = new System.Drawing.Size(320, 475);
-            this.lvUsers.TabIndex = 9;
-            this.lvUsers.UseCompatibleStateImageBehavior = false;
-            this.lvUsers.View = System.Windows.Forms.View.Details;
+            this.lvClients.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lvClients.FullRowSelect = true;
+            this.lvClients.GridLines = true;
+            this.lvClients.HideSelection = false;
+            this.lvClients.Location = new System.Drawing.Point(547, 12);
+            this.lvClients.Name = "lvClients";
+            this.lvClients.Size = new System.Drawing.Size(320, 475);
+            this.lvClients.TabIndex = 9;
+            this.lvClients.UseCompatibleStateImageBehavior = false;
+            this.lvClients.View = System.Windows.Forms.View.Details;
             // 
             // nickName
             // 
@@ -109,7 +109,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(879, 500);
-            this.Controls.Add(this.lvUsers);
+            this.Controls.Add(this.lvClients);
             this.Controls.Add(this.txtMessage);
             this.Controls.Add(this.btnSendMessage);
             this.Controls.Add(this.txtMessages);
@@ -129,7 +129,7 @@
         private System.Windows.Forms.TextBox txtMessages;
         private System.Windows.Forms.Button btnSendMessage;
         private System.Windows.Forms.TextBox txtMessage;
-        private System.Windows.Forms.ListView lvUsers;
+        private System.Windows.Forms.ListView lvClients;
         private System.Windows.Forms.ColumnHeader nickName;
         private System.Windows.Forms.ColumnHeader ipAddress;
     }

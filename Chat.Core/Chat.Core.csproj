@@ -44,9 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\Client.cs" />
+    <Compile Include="Client\ChatClient.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\ChatServer.cs" />
     <Compile Include="Server\Events.cs" />

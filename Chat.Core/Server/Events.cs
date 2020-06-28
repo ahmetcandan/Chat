@@ -32,14 +32,14 @@ namespace Chat.Core.Server
         }
         private IClient client;
 
-        public string Message
+        public Message Message
         {
             get { return message; }
             set { message = value; }
         }
-        private string message;
+        private Message message;
         
-        public ClientSendMessageArguments(IClient client, string message)
+        public ClientSendMessageArguments(IClient client, Message message)
         {
             this.client = client;
             this.message = message;

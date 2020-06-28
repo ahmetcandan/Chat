@@ -17,13 +17,14 @@ namespace Chat.Core.Client
         private const byte START_BYTE = (byte)60;
         private const byte END_BYTE = (byte)62;
 
-        public string ServerIPAddress
-        {
-            get { return serverIPAddress; }
-        }
+        public string ServerIPAddress { get { return serverIPAddress; } }
         private string serverIPAddress;
         public string Nick { get { return nick; } }
         private string nick;
+        public long ClientId { get { return clientId; } }
+        private long clientId;
+        public string ClientIPAddress { get { return clientIPAddress; } }
+        private string clientIPAddress;
         public int ServerPort
         {
             get { return serverPort; }
@@ -42,11 +43,12 @@ namespace Chat.Core.Client
         private BinaryReader binaryReader;
         private Thread thread;
         private volatile bool working = false;
-        public ChatClient(string serverIPAddress, int serverPort, string nick)
+        public ChatClient(string serverIPAddress, int serverPort, string nick, string clientIPAddress)
         {
             this.nick = nick;
             this.serverIPAddress = serverIPAddress;
             this.serverPort = serverPort;
+            this.clientIPAddress = clientIPAddress;
         }
 
         public bool Connect()
@@ -64,7 +66,7 @@ namespace Chat.Core.Client
                 thread.Start();
 
 
-                login(nick);
+                login(new ClientItem { ClientId = 0, IPAddress = clientIPAddress, Nick = nick });
                 return true;
             }
             catch (Exception)
@@ -77,7 +79,7 @@ namespace Chat.Core.Client
         {
             try
             {
-                sendCommand(Cmd.Logout);
+                sendCommand(Cmd.Logout, JsonConvert.SerializeObject(new ClientItem { ClientId = 0, IPAddress = clientIPAddress, Nick = nick }));
                 working = false;
                 clientConnection.Close();
                 thread.Join();
@@ -88,14 +90,14 @@ namespace Chat.Core.Client
             }
         }
 
-        private bool login(string nick)
+        private bool login(ClientItem client)
         {
-            return sendCommand(Cmd.Login, nick);
+            return sendCommand(Cmd.Login, JsonConvert.SerializeObject(client));
         }
 
         public bool SendMessage(string message)
         {
-            return sendCommand(Cmd.Message, message);
+            return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
         }
 
         public bool SetNick(string nickName)
@@ -141,20 +143,26 @@ namespace Chat.Core.Client
                     List<byte> bList = new List<byte>();
                     while ((b = binaryReader.ReadByte()) != END_BYTE)
                         bList.Add(b);
+                    ClientItem clientItem;
                     string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
                     Command command = JsonConvert.DeserializeObject<Command>(result);
                     switch (command.Cmd)
                     {
                         case Cmd.Message:
-                            newMessageReceivedTrigger(command.Content);
+                            Message message = JsonConvert.DeserializeObject<Message>(command.Content);
+                            if (message.To == 0 || message.To == 1)
+                                newMessageReceivedTrigger(message);
                             break;
                         case Cmd.Login:
-                            newClientConnectTrigger(this);
+                            clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
+                            newClientConnectTrigger(clientItem);
                             break;
                         case Cmd.Logout:
-                            clientDisconnectedTrigger(this);
+                            clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
+                            clientDisconnectedTrigger(clientItem);
                             break;
                         case Cmd.SetNick:
+                            nick = command.Content;
                             break;
                         case Cmd.Command:
                             break;
@@ -181,19 +189,19 @@ namespace Chat.Core.Client
                 CloseConnected();
         }
 
-        private void newMessageReceivedTrigger(string message)
+        private void newMessageReceivedTrigger(Message message)
         {
             if (NewMessgeReceived != null)
                 NewMessgeReceived(new MessageReceivingArguments(message));
         }
 
-        private void newClientConnectTrigger(ChatClient client)
+        private void newClientConnectTrigger(ClientItem client)
         {
             if (NewClientConnected != null)
                 NewClientConnected(client);
         }
 
-        private void clientDisconnectedTrigger(ChatClient client)
+        private void clientDisconnectedTrigger(ClientItem client)
         {
             if (ClientDisconnected != null)
                 ClientDisconnected(client);
@@ -201,6 +209,7 @@ namespace Chat.Core.Client
 
         private void clientListRefreshTrigger(List<ClientItem> clients)
         {
+            clientId = clients.FirstOrDefault(c => c.Nick == Nick).ClientId;
             if (ClientListRefresh != null)
                 ClientListRefresh(clients);
         }
