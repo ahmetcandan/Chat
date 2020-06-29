@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chat.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace ChatClient
     {
         public static Chat.Core.Client.ChatClient Client;
         public static bool HasConnection = false;
+        public static List<ClientItem> Clients = new List<ClientItem>();
     }
 }

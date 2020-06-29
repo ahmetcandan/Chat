@@ -42,7 +42,7 @@ namespace ChatServer
 
         private void newMessage(ClientSendMessageArguments e)
         {
-            txtMessages.Text += $"\n{e.Client.Nick}: {e.Message.Content}";
+            txtMessages.Text += $@"{e.Client.Nick}: {e.Message.Content}{Environment.NewLine}";
         }
 
         private void btnStart_Click(object sender, EventArgs e)

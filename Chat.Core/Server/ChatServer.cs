@@ -322,17 +322,16 @@ namespace Chat.Core.Server
                                 nick = clientItem.Nick;
                                 ipAddress = clientItem.IPAddress;
                                 foreach (var item in server.Clients)
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 break;
                             case Cmd.Logout:
-                                clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
                                 foreach (var item in server.Clients)
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 break;
                             case Cmd.SetNick:
                                 nick = command.Content;
                                 foreach (var item in server.Clients)
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key }).ToList()));
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 break;
                             case Cmd.Command:
                                 break;
@@ -369,10 +368,10 @@ namespace Chat.Core.Server
                     connectionClosed();
             }
 
-            internal void newMessageReceived_event(Message message)
+            internal void newMessageReceived_event(Message message, ClientItem from)
             {
                 if (newMessageReceived != null)
-                    newMessageReceived(new MessageReceivingArguments(message));
+                    newMessageReceived(new MessageReceivingArguments(message, from));
             }
         }
     }

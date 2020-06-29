@@ -25,6 +25,7 @@ namespace Chat.Core.Client
         private long clientId;
         public string ClientIPAddress { get { return clientIPAddress; } }
         private string clientIPAddress;
+        List<ClientItem> clients = new List<ClientItem>();
         public int ServerPort
         {
             get { return serverPort; }
@@ -79,7 +80,7 @@ namespace Chat.Core.Client
         {
             try
             {
-                sendCommand(Cmd.Logout, JsonConvert.SerializeObject(new ClientItem { ClientId = 0, IPAddress = clientIPAddress, Nick = nick }));
+                sendCommand(Cmd.Logout);
                 working = false;
                 clientConnection.Close();
                 thread.Join();
@@ -98,6 +99,11 @@ namespace Chat.Core.Client
         public bool SendMessage(string message)
         {
             return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
+        }
+
+        public bool SendMessage(string message, long toClientId)
+        {
+            return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = toClientId, Content = message })));
         }
 
         public bool SetNick(string nickName)
@@ -150,8 +156,9 @@ namespace Chat.Core.Client
                     {
                         case Cmd.Message:
                             Message message = JsonConvert.DeserializeObject<Message>(command.Content);
-                            if (message.To == 0 || message.To == 1)
-                                newMessageReceivedTrigger(message);
+                            ClientItem from = clients.FirstOrDefault(c => c.ClientId == message.From);
+                            if (message.To == 0 || message.To == clientId || message.From == clientId)
+                                newMessageReceivedTrigger(message, from);
                             break;
                         case Cmd.Login:
                             clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
@@ -167,7 +174,7 @@ namespace Chat.Core.Client
                         case Cmd.Command:
                             break;
                         case Cmd.UserList:
-                            List<ClientItem> clients = JsonConvert.DeserializeObject<List<ClientItem>>(command.Content);
+                            clients = JsonConvert.DeserializeObject<List<ClientItem>>(command.Content);
                             clientListRefreshTrigger(clients);
                             break;
                         default:
@@ -189,10 +196,10 @@ namespace Chat.Core.Client
                 CloseConnected();
         }
 
-        private void newMessageReceivedTrigger(Message message)
+        private void newMessageReceivedTrigger(Message message, ClientItem from)
         {
             if (NewMessgeReceived != null)
-                NewMessgeReceived(new MessageReceivingArguments(message));
+                NewMessgeReceived(new MessageReceivingArguments(message, from));
         }
 
         private void newClientConnectTrigger(ClientItem client)

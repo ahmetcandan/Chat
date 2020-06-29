@@ -34,7 +34,7 @@
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.lvClients = new System.Windows.Forms.ListView();
             this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ipAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.clientId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // txtMessages
@@ -75,14 +75,15 @@
             this.txtMessage.Size = new System.Drawing.Size(449, 23);
             this.txtMessage.TabIndex = 7;
             this.txtMessage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMessage_KeyPress);
             // 
             // lvClients
             // 
             this.lvClients.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lvClients.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.nickName,
-            this.ipAddress});
+            this.clientId,
+            this.nickName});
             this.lvClients.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lvClients.FullRowSelect = true;
             this.lvClients.GridLines = true;
@@ -93,16 +94,20 @@
             this.lvClients.TabIndex = 9;
             this.lvClients.UseCompatibleStateImageBehavior = false;
             this.lvClients.View = System.Windows.Forms.View.Details;
+            this.lvClients.DoubleClick += new System.EventHandler(this.lvClients_DoubleClick);
             // 
             // nickName
             // 
+            this.nickName.DisplayIndex = 0;
             this.nickName.Text = "Nick";
-            this.nickName.Width = 144;
+            this.nickName.Width = 314;
             // 
-            // ipAddress
+            // clientId
             // 
-            this.ipAddress.Text = "IP";
-            this.ipAddress.Width = 168;
+            this.clientId.DisplayIndex = 1;
+            this.clientId.Text = "clientId";
+            this.clientId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.clientId.Width = 0;
             // 
             // frmMain
             // 
@@ -131,7 +136,7 @@
         private System.Windows.Forms.TextBox txtMessage;
         private System.Windows.Forms.ListView lvClients;
         private System.Windows.Forms.ColumnHeader nickName;
-        private System.Windows.Forms.ColumnHeader ipAddress;
+        private System.Windows.Forms.ColumnHeader clientId;
     }
 }
 

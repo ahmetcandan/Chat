@@ -21,10 +21,12 @@ namespace Chat.Core
         private Message message;
 
         public Message Message { get => message; set => message = value; }
+        public ClientItem To { get; set; }
 
-        public MessageReceivingArguments(Message message)
+        public MessageReceivingArguments(Message message, ClientItem from)
         {
             this.Message = message;
+            this.To = from;
         }
     }
 

@@ -106,7 +106,7 @@
             this.btnConnect.Location = new System.Drawing.Point(198, 134);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(121, 34);
-            this.btnConnect.TabIndex = 0;
+            this.btnConnect.TabIndex = 3;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = false;
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
@@ -117,7 +117,7 @@
             this.txtIPAddress.Location = new System.Drawing.Point(158, 21);
             this.txtIPAddress.Name = "txtIPAddress";
             this.txtIPAddress.Size = new System.Drawing.Size(161, 23);
-            this.txtIPAddress.TabIndex = 6;
+            this.txtIPAddress.TabIndex = 0;
             this.txtIPAddress.Text = "127.0.0.1";
             // 
             // txtNick
@@ -126,7 +126,7 @@
             this.txtNick.Location = new System.Drawing.Point(158, 79);
             this.txtNick.Name = "txtNick";
             this.txtNick.Size = new System.Drawing.Size(161, 23);
-            this.txtNick.TabIndex = 6;
+            this.txtNick.TabIndex = 2;
             this.txtNick.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // txtPortNo
@@ -135,7 +135,7 @@
             this.txtPortNo.Location = new System.Drawing.Point(158, 50);
             this.txtPortNo.Name = "txtPortNo";
             this.txtPortNo.Size = new System.Drawing.Size(161, 23);
-            this.txtPortNo.TabIndex = 6;
+            this.txtPortNo.TabIndex = 1;
             this.txtPortNo.Text = "42001";
             this.txtPortNo.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
