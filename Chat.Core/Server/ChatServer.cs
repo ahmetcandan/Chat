@@ -320,22 +320,41 @@ namespace Chat.Core.Server
                             case Cmd.Login:
                                 clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
                                 nick = clientItem.Nick;
+                                string originalNick = nick;
                                 ipAddress = clientItem.IPAddress;
+                                int code = 0;
+                                while (server.Clients.Any(c => c.Value.Nick == nick && c.Key != clientId))
+                                {
+                                    code++;
+                                    nick = $"{originalNick}-{code.ToString("000")}";
+                                }
                                 if (server.ClientConnected != null)
                                     server.ClientConnected(new ClientConnectionArguments(this));
                                 foreach (var item in server.Clients)
-                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                                    {
+                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress }
+                                    }));
                                 break;
                             case Cmd.Logout:
                                 foreach (var item in server.Clients.Where(c => c.Key != clientId))
-                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in item.Value.server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                                    {
+                                        Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress }
+                                    }));
                                 if (server.ClientDisconnected != null)
                                     server.ClientDisconnected(new ClientConnectionArguments(this));
                                 break;
                             case Cmd.SetNick:
                                 nick = command.Content;
                                 foreach (var item in server.Clients)
-                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                                    {
+                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress }
+                                    }));
                                 break;
                             case Cmd.Command:
                                 break;

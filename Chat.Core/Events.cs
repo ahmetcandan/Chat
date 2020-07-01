@@ -10,7 +10,7 @@ namespace Chat.Core
     public delegate void dgNewMessageReceived(MessageReceivingArguments e);
     public delegate void dgNewClientConnected(ClientItem client);
     public delegate void dgNewClientDisconnected(ClientItem client);
-    public delegate void dgClientListRefresh(List<ClientItem> clients);
+    public delegate void dgClientListRefresh(ClientListResponse clients);
     public delegate void dgServerStopped();
 
     public class MessageReceivingArguments : EventArgs
@@ -30,11 +30,17 @@ namespace Chat.Core
             this.To = from;
         }
     }
-
+    
     public class ClientItem
     {
         public long ClientId { get; set; }
         public string Nick { get; set; }
         public string IPAddress { get; set; }
+    }
+
+    public class ClientListResponse
+    {
+        public List<ClientItem> Clients { get; set; }
+        public ClientItem Client { get; set; }
     }
 }

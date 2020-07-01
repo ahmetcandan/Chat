@@ -42,9 +42,9 @@ namespace ChatClient
             Invoke(new dgNewMessageReceived(newMessage), e);
         }
 
-        private void clientListRefresh(List<ClientItem> clients)
+        private void clientListRefresh(ClientListResponse response)
         {
-            Invoke(new dgClientListRefresh(refreshClientList), clients);
+            Invoke(new dgClientListRefresh(refreshClientList), response);
         }
 
         private void serverStopped()
@@ -55,11 +55,12 @@ namespace ChatClient
             btnSendMessage.Enabled = false;
         }
 
-        private void refreshClientList(List<ClientItem> clients)
+        private void refreshClientList(ClientListResponse response)
         {
-            Session.Clients = clients;
+            Session.Clients = response.Clients;
             lvClients.Items.Clear();
-            foreach (var client in clients)
+            Text = response.Client.Nick;
+            foreach (var client in response.Clients)
             {
                 ListViewItem item = new ListViewItem();
                 item.Text = client.ClientId.ToString();

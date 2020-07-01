@@ -65,8 +65,6 @@ namespace Chat.Core.Client
                 thread = new Thread(new ThreadStart(tRun));
                 working = true;
                 thread.Start();
-
-
                 login(new ClientItem { ClientId = 0, IPAddress = clientIPAddress, Nick = nick });
                 return true;
             }
@@ -173,8 +171,9 @@ namespace Chat.Core.Client
                         case Cmd.Command:
                             break;
                         case Cmd.UserList:
-                            clients = JsonConvert.DeserializeObject<List<ClientItem>>(command.Content);
-                            clientListRefreshTrigger(clients);
+                            var response = JsonConvert.DeserializeObject<ClientListResponse>(command.Content);
+                            clients = response.Clients;
+                            clientListRefreshTrigger(response);
                             break;
                         case Cmd.ServerStop:
                             serverStoppedTrigger();
@@ -209,11 +208,11 @@ namespace Chat.Core.Client
                 ServerStopped();
         }
 
-        private void clientListRefreshTrigger(List<ClientItem> clients)
+        private void clientListRefreshTrigger(ClientListResponse response)
         {
-            clientId = clients.FirstOrDefault(c => c.Nick == Nick).ClientId;
+            clientId = response.Client.ClientId;
             if (ClientListRefresh != null)
-                ClientListRefresh(clients);
+                ClientListRefresh(response);
         }
     }
 }
