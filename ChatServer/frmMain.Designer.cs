@@ -37,13 +37,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.grpMessages = new System.Windows.Forms.GroupBox();
             this.frpUsers = new System.Windows.Forms.GroupBox();
-            this.lvUsers = new System.Windows.Forms.ListView();
+            this.lvClients = new System.Windows.Forms.ListView();
             this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ipAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.notifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.clientId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.grpConnection.SuspendLayout();
             this.grpMessages.SuspendLayout();
             this.frpUsers.SuspendLayout();
@@ -133,7 +134,7 @@
             // 
             this.frpUsers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.frpUsers.Controls.Add(this.lvUsers);
+            this.frpUsers.Controls.Add(this.lvClients);
             this.frpUsers.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.frpUsers.Location = new System.Drawing.Point(12, 79);
             this.frpUsers.Name = "frpUsers";
@@ -142,32 +143,35 @@
             this.frpUsers.TabStop = false;
             this.frpUsers.Text = "Users";
             // 
-            // lvUsers
+            // lvClients
             // 
-            this.lvUsers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lvClients.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvUsers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lvClients.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.clientId,
             this.nickName,
             this.ipAddress});
-            this.lvUsers.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lvUsers.FullRowSelect = true;
-            this.lvUsers.GridLines = true;
-            this.lvUsers.HideSelection = false;
-            this.lvUsers.Location = new System.Drawing.Point(11, 24);
-            this.lvUsers.Name = "lvUsers";
-            this.lvUsers.Size = new System.Drawing.Size(320, 310);
-            this.lvUsers.TabIndex = 9;
-            this.lvUsers.UseCompatibleStateImageBehavior = false;
-            this.lvUsers.View = System.Windows.Forms.View.Details;
+            this.lvClients.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lvClients.FullRowSelect = true;
+            this.lvClients.GridLines = true;
+            this.lvClients.HideSelection = false;
+            this.lvClients.Location = new System.Drawing.Point(11, 24);
+            this.lvClients.Name = "lvClients";
+            this.lvClients.Size = new System.Drawing.Size(320, 310);
+            this.lvClients.TabIndex = 9;
+            this.lvClients.UseCompatibleStateImageBehavior = false;
+            this.lvClients.View = System.Windows.Forms.View.Details;
             // 
             // nickName
             // 
+            this.nickName.DisplayIndex = 0;
             this.nickName.Text = "Nick";
             this.nickName.Width = 144;
             // 
             // ipAddress
             // 
+            this.ipAddress.DisplayIndex = 1;
             this.ipAddress.Text = "IP";
             this.ipAddress.Width = 168;
             // 
@@ -187,13 +191,20 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // errorProvider1
             // 
             this.errorProvider1.ContainerControl = this;
+            // 
+            // clientId
+            // 
+            this.clientId.DisplayIndex = 2;
+            this.clientId.Text = "Client Id";
+            this.clientId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.clientId.Width = 0;
             // 
             // frmMain
             // 
@@ -230,13 +241,14 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox grpMessages;
         private System.Windows.Forms.GroupBox frpUsers;
-        private System.Windows.Forms.ListView lvUsers;
+        private System.Windows.Forms.ListView lvClients;
         private System.Windows.Forms.ColumnHeader nickName;
         private System.Windows.Forms.ColumnHeader ipAddress;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ContextMenuStrip notifyMenu;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ColumnHeader clientId;
     }
 }
 

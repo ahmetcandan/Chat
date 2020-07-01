@@ -17,8 +17,8 @@ namespace Chat.Core.Server
             get { return port; }
         }
         private int port;
-        public event dgNewClientConnected NewClientConnected;
-        public event dgClientConnectionClosed ClientConnectionClosed;
+        public event dgClientConnected ClientConnected;
+        public event dgClientDisconnected ClientDisconnected;
         public event dgNewMessageReceivedFromClient NewMessageReceivedFromClient;
 
         private long lastClientId = 0;
@@ -75,8 +75,6 @@ namespace Chat.Core.Server
                 Clients.Add(client.ClientId, client);
             }
             client.Start();
-            if (NewClientConnected != null)
-                NewClientConnected(new ClientConnectionArguments(client));
         }
 
         private void newMessageReceivedFromClient(Client client, Message message)
@@ -87,8 +85,6 @@ namespace Chat.Core.Server
 
         private void clientConnectionClosed(Client client)
         {
-            if (ClientConnectionClosed != null)
-                ClientConnectionClosed(new ClientConnectionArguments(client));
             if (working)
                 lock (objSenk)
                     if (Clients.ContainsKey(client.ClientId))
@@ -321,12 +317,16 @@ namespace Chat.Core.Server
                                 clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
                                 nick = clientItem.Nick;
                                 ipAddress = clientItem.IPAddress;
+                                if (server.ClientConnected != null)
+                                    server.ClientConnected(new ClientConnectionArguments(this));
                                 foreach (var item in server.Clients)
                                     item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 break;
                             case Cmd.Logout:
-                                foreach (var item in server.Clients)
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                foreach (var item in server.Clients.Where(c => c.Key != clientId))
+                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in item.Value.server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                if (server.ClientDisconnected != null)
+                                    server.ClientDisconnected(new ClientConnectionArguments(this));
                                 break;
                             case Cmd.SetNick:
                                 nick = command.Content;

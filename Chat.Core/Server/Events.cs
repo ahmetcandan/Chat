@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Chat.Core.Server
 {
-    public delegate void dgNewClientConnected(ClientConnectionArguments e);
-    public delegate void dgClientConnectionClosed(ClientConnectionArguments e);
+    public delegate void dgClientConnected(ClientConnectionArguments e);
+    public delegate void dgClientDisconnected(ClientConnectionArguments e);
     public delegate void dgNewMessageReceivedFromClient(ClientSendMessageArguments e);
 
     public class ClientConnectionArguments : EventArgs

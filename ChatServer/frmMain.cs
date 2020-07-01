@@ -25,14 +25,14 @@ namespace ChatServer
 
         }
 
-        private void clientConnectionClosed(ClientConnectionArguments e)
+        private void clientDisconnected(ClientConnectionArguments e)
         {
-            Invoke(new dgClientConnectionClosed(closeConnection), e);
+            Invoke(new dgClientDisconnected(removeClient), e);
         }
 
-        private void closeConnection(ClientConnectionArguments e)
+        private void clientConnection(ClientConnectionArguments e)
         {
-
+            Invoke(new dgClientConnected(newClient), e);
         }
 
         private void newMessageReceivedFromClient(ClientSendMessageArguments e)
@@ -40,9 +40,37 @@ namespace ChatServer
             Invoke(new dgNewMessageReceivedFromClient(newMessage), e);
         }
 
+        private void removeClient(ClientConnectionArguments e)
+        {
+            Session.Clients.Remove(Session.Clients.First(c => c.ClientId == e.Client.ClientId));
+            refreshClientList();
+        }
+
+        private void newClient(ClientConnectionArguments e)
+        {
+            Session.Clients.Add(new Chat.Core.ClientItem() { ClientId = e.Client.ClientId, Nick = e.Client.Nick, IPAddress = e.Client.IPAddress });
+            refreshClientList();
+        }
+
+        private void refreshClientList()
+        {
+            lvClients.Items.Clear();
+            foreach (var client in Session.Clients)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Text = client.ClientId.ToString();
+                item.SubItems.Add(client.Nick);
+                item.SubItems.Add(client.IPAddress);
+                lvClients.Items.Add(item);
+            }
+        }
+
         private void newMessage(ClientSendMessageArguments e)
         {
-            txtMessages.Text += $@"{e.Client.Nick}: {e.Message.Content}{Environment.NewLine}";
+            string to = e.Message.To == 0 ? string.Empty : "- " + Session.Clients.First(c => c.ClientId == e.Message.To).Nick;
+            txtMessages.Text += $@"{e.Client.Nick} {to}: {e.Message.Content}{Environment.NewLine}";
+            txtMessages.SelectionStart = txtMessages.Text.Length;
+            txtMessages.ScrollToCaret();
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -70,7 +98,8 @@ namespace ChatServer
 
                     server = new Chat.Core.Server.ChatServer(portNo);
                     server.NewMessageReceivedFromClient += new dgNewMessageReceivedFromClient(newMessageReceivedFromClient);
-                    server.ClientConnectionClosed += new dgClientConnectionClosed(clientConnectionClosed);
+                    server.ClientDisconnected += new dgClientDisconnected(clientDisconnected);
+                    server.ClientConnected += new dgClientConnected(clientConnection);
 
                     server.Start();
                     btnStart.Text = "Stop";

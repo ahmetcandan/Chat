@@ -71,6 +71,8 @@ namespace ChatClient
                 var form = openPriveteMessage(clientId);
                 form.ReceivedMessage(e.Message);
             }
+            txtMessages.SelectionStart = txtMessages.Text.Length;
+            txtMessages.ScrollToCaret();
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)

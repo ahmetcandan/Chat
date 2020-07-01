@@ -18,7 +18,7 @@ namespace ChatClient
         {
             InitializeComponent();
             this.toClient = toClient;
-            Text = $"{Session.Client.Nick} | {toClient.Nick}";
+            Text = $"{toClient.Nick}";
         }
 
         private void txtMessage_KeyPress(object sender, KeyPressEventArgs e)
@@ -42,6 +42,12 @@ namespace ChatClient
         {
             var fromClient = Session.Clients.First(c => c.ClientId == message.From);
             txtMessages.Text += $@"{fromClient.Nick}: {message.Content}{Environment.NewLine}";
+        }
+
+        private void txtMessages_TextChanged(object sender, EventArgs e)
+        {
+            txtMessages.SelectionStart = txtMessages.Text.Length;
+            txtMessages.ScrollToCaret();
         }
     }
 }

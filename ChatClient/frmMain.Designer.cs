@@ -33,8 +33,8 @@
             this.btnSendMessage = new System.Windows.Forms.Button();
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.lvClients = new System.Windows.Forms.ListView();
-            this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clientId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // txtMessages
@@ -43,6 +43,7 @@
             this.txtMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMessages.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessages.Location = new System.Drawing.Point(12, 12);
             this.txtMessages.Multiline = true;
             this.txtMessages.Name = "txtMessages";
@@ -57,9 +58,9 @@
             this.btnSendMessage.BackColor = System.Drawing.Color.LimeGreen;
             this.btnSendMessage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSendMessage.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSendMessage.Location = new System.Drawing.Point(467, 464);
+            this.btnSendMessage.Location = new System.Drawing.Point(478, 464);
             this.btnSendMessage.Name = "btnSendMessage";
-            this.btnSendMessage.Size = new System.Drawing.Size(74, 23);
+            this.btnSendMessage.Size = new System.Drawing.Size(63, 23);
             this.btnSendMessage.TabIndex = 5;
             this.btnSendMessage.Text = "Send";
             this.btnSendMessage.UseVisualStyleBackColor = false;
@@ -72,9 +73,8 @@
             this.txtMessage.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessage.Location = new System.Drawing.Point(12, 464);
             this.txtMessage.Name = "txtMessage";
-            this.txtMessage.Size = new System.Drawing.Size(449, 23);
+            this.txtMessage.Size = new System.Drawing.Size(466, 23);
             this.txtMessage.TabIndex = 7;
-            this.txtMessage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMessage_KeyPress);
             // 
             // lvClients
@@ -96,18 +96,18 @@
             this.lvClients.View = System.Windows.Forms.View.Details;
             this.lvClients.DoubleClick += new System.EventHandler(this.lvClients_DoubleClick);
             // 
-            // nickName
-            // 
-            this.nickName.DisplayIndex = 0;
-            this.nickName.Text = "Nick";
-            this.nickName.Width = 314;
-            // 
             // clientId
             // 
             this.clientId.DisplayIndex = 1;
             this.clientId.Text = "clientId";
             this.clientId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.clientId.Width = 0;
+            // 
+            // nickName
+            // 
+            this.nickName.DisplayIndex = 0;
+            this.nickName.Text = "Nick";
+            this.nickName.Width = 314;
             // 
             // frmMain
             // 

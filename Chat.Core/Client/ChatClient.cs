@@ -32,10 +32,7 @@ namespace Chat.Core.Client
             set { serverPort = value; }
         }
         private int serverPort;
-        public event dgConnectionClosed CloseConnected;
         public event dgNewMessageReceived NewMessgeReceived;
-        public event dgNewClientConnected NewClientConnected;
-        public event dgNewClientDisconnected ClientDisconnected;
         public event dgClientListRefresh ClientListRefresh;
 
         private Socket clientConnection;
@@ -81,8 +78,10 @@ namespace Chat.Core.Client
             try
             {
                 sendCommand(Cmd.Logout);
+                Thread.Sleep(100);
                 working = false;
                 clientConnection.Close();
+                thread.Abort(100);
                 thread.Join();
             }
             catch (Exception)
@@ -161,15 +160,10 @@ namespace Chat.Core.Client
                                 newMessageReceivedTrigger(message, from);
                             break;
                         case Cmd.Login:
-                            clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
-                            newClientConnectTrigger(clientItem);
                             break;
                         case Cmd.Logout:
-                            clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
-                            clientDisconnectedTrigger(clientItem);
                             break;
                         case Cmd.SetNick:
-                            nick = command.Content;
                             break;
                         case Cmd.Command:
                             break;
@@ -187,31 +181,12 @@ namespace Chat.Core.Client
                 }
             }
             working = false;
-            closeConnected_event();
-        }
-
-        private void closeConnected_event()
-        {
-            if (CloseConnected != null)
-                CloseConnected();
         }
 
         private void newMessageReceivedTrigger(Message message, ClientItem from)
         {
             if (NewMessgeReceived != null)
                 NewMessgeReceived(new MessageReceivingArguments(message, from));
-        }
-
-        private void newClientConnectTrigger(ClientItem client)
-        {
-            if (NewClientConnected != null)
-                NewClientConnected(client);
-        }
-
-        private void clientDisconnectedTrigger(ClientItem client)
-        {
-            if (ClientDisconnected != null)
-                ClientDisconnected(client);
         }
 
         private void clientListRefreshTrigger(List<ClientItem> clients)

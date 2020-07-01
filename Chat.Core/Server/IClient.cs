@@ -10,6 +10,7 @@ namespace Chat.Core.Server
     {
         long ClientId { get; }
         string Nick { get; }
+        string IPAddress { get; }
         bool HasConnection { get; }
         bool SendMessage(string mesaj);
         void CloseConnection();
