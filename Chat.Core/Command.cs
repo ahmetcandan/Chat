@@ -19,6 +19,9 @@ namespace Chat.Core
         Logout = 3,
         SetNick = 4,
         Command = 5,
-        UserList = 6
+        UserList = 6,
+        ServerStop = 7,
+        Block = 8,
+        Unblock = 9
     }
 }

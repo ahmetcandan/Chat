@@ -16,8 +16,6 @@ namespace ChatClient
 {
     public partial class frmMain : Form
     {
-        bool start = false;
-        bool hasConnection = false;
         Dictionary<long, frmMessage> privateMessageFormList = new Dictionary<long, frmMessage>();
         public frmMain()
         {
@@ -36,16 +34,25 @@ namespace ChatClient
             Text = $"Chat | {Session.Client.Nick}";
             Session.Client.NewMessgeReceived += new dgNewMessageReceived(newMessageReceived);
             Session.Client.ClientListRefresh += new dgClientListRefresh(clientListRefresh);
+            Session.Client.ServerStopped += new dgServerStopped(() => Invoke(new dgServerStopped(serverStopped)));
         }
 
-        public void newMessageReceived(MessageReceivingArguments e)
+        private void newMessageReceived(MessageReceivingArguments e)
         {
             Invoke(new dgNewMessageReceived(newMessage), e);
         }
 
-        public void clientListRefresh(List<ClientItem> clients)
+        private void clientListRefresh(List<ClientItem> clients)
         {
             Invoke(new dgClientListRefresh(refreshClientList), clients);
+        }
+
+        private void serverStopped()
+        {
+            txtMessage.Clear();
+            txtMessage.ReadOnly = true;
+            lvClients.Items.Clear();
+            btnSendMessage.Enabled = false;
         }
 
         private void refreshClientList(List<ClientItem> clients)

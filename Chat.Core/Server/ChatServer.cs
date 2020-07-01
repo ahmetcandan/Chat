@@ -45,6 +45,8 @@ namespace Chat.Core.Server
 
         public void Stop()
         {
+            foreach (var item in Clients)
+                item.Value.SendCommand(Cmd.ServerStop, string.Empty);
             connectionListener.Stop();
             working = false;
             try
@@ -193,6 +195,8 @@ namespace Chat.Core.Server
             private const byte START_BYTE = (byte)60;
             private const byte END_BYTE = (byte)62;
 
+            public bool BlockStatus { get { return blockStatus; } }
+            private bool blockStatus = false;
             public long ClientId { get { return clientId; } }
             private long clientId;
             public string Nick { get { return nick; } }
@@ -262,10 +266,10 @@ namespace Chat.Core.Server
 
             public bool SendMessage(string message)
             {
-                return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
+                return SendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
             }
 
-            private bool sendCommand(Cmd cmd, string content)
+            public bool SendCommand(Cmd cmd, string content)
             {
                 try
                 {
@@ -307,10 +311,10 @@ namespace Chat.Core.Server
                                 server.newMessageReceivedFromClient(this, message);
                                 if (message.To == 0)
                                     foreach (var item in server.Clients)
-                                        item.Value.sendCommand(command.Cmd, command.Content);
+                                        item.Value.SendCommand(command.Cmd, command.Content);
                                 else
                                     foreach (var item in server.Clients.Where(c => c.Key == message.To || c.Key == message.From))
-                                        item.Value.sendCommand(command.Cmd, command.Content);
+                                        item.Value.SendCommand(command.Cmd, command.Content);
 
                                 break;
                             case Cmd.Login:
@@ -320,22 +324,28 @@ namespace Chat.Core.Server
                                 if (server.ClientConnected != null)
                                     server.ClientConnected(new ClientConnectionArguments(this));
                                 foreach (var item in server.Clients)
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 break;
                             case Cmd.Logout:
                                 foreach (var item in server.Clients.Where(c => c.Key != clientId))
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in item.Value.server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in item.Value.server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 if (server.ClientDisconnected != null)
                                     server.ClientDisconnected(new ClientConnectionArguments(this));
                                 break;
                             case Cmd.SetNick:
                                 nick = command.Content;
                                 foreach (var item in server.Clients)
-                                    item.Value.sendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
+                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject((from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList()));
                                 break;
                             case Cmd.Command:
                                 break;
                             case Cmd.UserList:
+                                break;
+                            case Cmd.ServerStop:
+                                break;
+                            case Cmd.Block:
+                                break;
+                            case Cmd.Unblock:
                                 break;
                             default:
                                 break;
@@ -372,6 +382,18 @@ namespace Chat.Core.Server
             {
                 if (newMessageReceived != null)
                     newMessageReceived(new MessageReceivingArguments(message, from));
+            }
+
+            public void Block()
+            {
+                blockStatus = true;
+                SendCommand(Cmd.Block, string.Empty);
+            }
+
+            public void Unblock()
+            {
+                blockStatus = false;
+                SendCommand(Cmd.Unblock, string.Empty);
             }
         }
     }

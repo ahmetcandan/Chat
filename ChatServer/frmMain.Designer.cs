@@ -38,18 +38,21 @@
             this.grpMessages = new System.Windows.Forms.GroupBox();
             this.frpUsers = new System.Windows.Forms.GroupBox();
             this.lvClients = new System.Windows.Forms.ListView();
+            this.clientId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ipAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.notifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.clientId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.menuClients = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.banToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.grpConnection.SuspendLayout();
             this.grpMessages.SuspendLayout();
             this.frpUsers.SuspendLayout();
             this.notifyMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            this.menuClients.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
@@ -141,7 +144,7 @@
             this.frpUsers.Size = new System.Drawing.Size(345, 351);
             this.frpUsers.TabIndex = 11;
             this.frpUsers.TabStop = false;
-            this.frpUsers.Text = "Users";
+            this.frpUsers.Text = "Clients";
             // 
             // lvClients
             // 
@@ -152,6 +155,7 @@
             this.clientId,
             this.nickName,
             this.ipAddress});
+            this.lvClients.ContextMenuStrip = this.menuClients;
             this.lvClients.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lvClients.FullRowSelect = true;
             this.lvClients.GridLines = true;
@@ -162,6 +166,13 @@
             this.lvClients.TabIndex = 9;
             this.lvClients.UseCompatibleStateImageBehavior = false;
             this.lvClients.View = System.Windows.Forms.View.Details;
+            // 
+            // clientId
+            // 
+            this.clientId.DisplayIndex = 2;
+            this.clientId.Text = "Client Id";
+            this.clientId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.clientId.Width = 0;
             // 
             // nickName
             // 
@@ -199,12 +210,21 @@
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // clientId
+            // menuClients
             // 
-            this.clientId.DisplayIndex = 2;
-            this.clientId.Text = "Client Id";
-            this.clientId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.clientId.Width = 0;
+            this.menuClients.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.banToolStripMenuItem});
+            this.menuClients.Name = "menuClients";
+            this.menuClients.Size = new System.Drawing.Size(181, 48);
+            this.menuClients.Opening += new System.ComponentModel.CancelEventHandler(this.menuClients_Opening);
+            // 
+            // banToolStripMenuItem
+            // 
+            this.banToolStripMenuItem.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.banToolStripMenuItem.Name = "banToolStripMenuItem";
+            this.banToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.banToolStripMenuItem.Text = "Ban";
+            this.banToolStripMenuItem.Click += new System.EventHandler(this.banToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -228,6 +248,7 @@
             this.frpUsers.ResumeLayout(false);
             this.notifyMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
+            this.menuClients.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -249,6 +270,8 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.ColumnHeader clientId;
+        private System.Windows.Forms.ContextMenuStrip menuClients;
+        private System.Windows.Forms.ToolStripMenuItem banToolStripMenuItem;
     }
 }
 

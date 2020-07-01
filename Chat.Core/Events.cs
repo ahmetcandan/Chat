@@ -11,6 +11,7 @@ namespace Chat.Core
     public delegate void dgNewClientConnected(ClientItem client);
     public delegate void dgNewClientDisconnected(ClientItem client);
     public delegate void dgClientListRefresh(List<ClientItem> clients);
+    public delegate void dgServerStopped();
 
     public class MessageReceivingArguments : EventArgs
     {

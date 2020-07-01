@@ -17,6 +17,8 @@ namespace Chat.Core.Client
         private const byte START_BYTE = (byte)60;
         private const byte END_BYTE = (byte)62;
 
+        public bool BlockStatus { get { return blockStatus; } }
+        private bool blockStatus = false;
         public string ServerIPAddress { get { return serverIPAddress; } }
         private string serverIPAddress;
         public string Nick { get { return nick; } }
@@ -34,6 +36,7 @@ namespace Chat.Core.Client
         private int serverPort;
         public event dgNewMessageReceived NewMessgeReceived;
         public event dgClientListRefresh ClientListRefresh;
+        public event dgServerStopped ServerStopped;
 
         private Socket clientConnection;
         private NetworkStream networkStream;
@@ -120,6 +123,8 @@ namespace Chat.Core.Client
         {
             try
             {
+                if (blockStatus && cmd == Cmd.Message)
+                    return false;
                 string _result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
                 byte[] bMessage = Encoding.BigEndianUnicode.GetBytes(_result);
                 byte[] b = new byte[bMessage.Length + 2];
@@ -171,6 +176,15 @@ namespace Chat.Core.Client
                             clients = JsonConvert.DeserializeObject<List<ClientItem>>(command.Content);
                             clientListRefreshTrigger(clients);
                             break;
+                        case Cmd.ServerStop:
+                            serverStoppedTrigger();
+                            break;
+                        case Cmd.Block:
+                            blockStatus = true;
+                            break;
+                        case Cmd.Unblock:
+                            blockStatus = false;
+                            break;
                         default:
                             break;
                     }
@@ -187,6 +201,12 @@ namespace Chat.Core.Client
         {
             if (NewMessgeReceived != null)
                 NewMessgeReceived(new MessageReceivingArguments(message, from));
+        }
+
+        private void serverStoppedTrigger()
+        {
+            if (ServerStopped != null)
+                ServerStopped();
         }
 
         private void clientListRefreshTrigger(List<ClientItem> clients)
