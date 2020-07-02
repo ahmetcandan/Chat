@@ -158,9 +158,8 @@ namespace Chat.Core.Client
                     {
                         case Cmd.Message:
                             Message message = JsonConvert.DeserializeObject<Message>(command.Content);
-                            ClientItem from = clients.FirstOrDefault(c => c.ClientId == message.From);
                             if (message.To == 0 || message.To == clientId || message.From == clientId)
-                                newMessageReceivedTrigger(message, from);
+                                newMessageReceivedTrigger(message);
                             break;
                         case Cmd.Login:
                             break;
@@ -196,10 +195,10 @@ namespace Chat.Core.Client
             working = false;
         }
 
-        private void newMessageReceivedTrigger(Message message, ClientItem from)
+        private void newMessageReceivedTrigger(Message message)
         {
             if (NewMessgeReceived != null)
-                NewMessgeReceived(new MessageReceivingArguments(message, from));
+                NewMessgeReceived(new MessageReceivingArguments(message));
         }
 
         private void serverStoppedTrigger()

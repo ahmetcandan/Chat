@@ -21,7 +21,11 @@ namespace Chat.Core.Server
         public ClientConnectionArguments(IClient client)
         {
             this.client = client;
+            date = DateTime.Now;
         }
+
+        public DateTime Date { get { return date; } }
+        private DateTime date;
     }
 
     public class ClientSendMessageArguments : EventArgs
@@ -38,11 +42,15 @@ namespace Chat.Core.Server
             set { message = value; }
         }
         private Message message;
-        
+
+        public DateTime Date { get { return date; } }
+        private DateTime date;
+
         public ClientSendMessageArguments(IClient client, Message message)
         {
             this.client = client;
             this.message = message;
+            date = DateTime.Now;
         }
     }
 }

@@ -334,7 +334,9 @@ namespace Chat.Core.Server
                                     item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                                     {
                                         Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress }
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress },
+                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress },
+                                        ClientEvent = ClientEvent.Login
                                     }));
                                 break;
                             case Cmd.Logout:
@@ -342,7 +344,9 @@ namespace Chat.Core.Server
                                     item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                                     {
                                         Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress }
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress },
+                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress },
+                                        ClientEvent = ClientEvent.Logout
                                     }));
                                 if (server.ClientDisconnected != null)
                                     server.ClientDisconnected(new ClientConnectionArguments(this));
@@ -353,7 +357,9 @@ namespace Chat.Core.Server
                                     item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                                     {
                                         Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress }
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress },
+                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress },
+                                        ClientEvent = ClientEvent.Refresh
                                     }));
                                 break;
                             case Cmd.Command:
@@ -397,10 +403,10 @@ namespace Chat.Core.Server
                     connectionClosed();
             }
 
-            internal void newMessageReceived_event(Message message, ClientItem from)
+            internal void newMessageReceived_event(Message message)
             {
                 if (newMessageReceived != null)
-                    newMessageReceived(new MessageReceivingArguments(message, from));
+                    newMessageReceived(new MessageReceivingArguments(message));
             }
 
             public void Block()

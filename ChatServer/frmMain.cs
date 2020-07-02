@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,12 +44,14 @@ namespace ChatServer
         private void removeClient(ClientConnectionArguments e)
         {
             Session.Clients.Remove(Session.Clients.First(c => c.ClientId == e.Client.ClientId));
+            setMessage($"Logout => Nick: {e.Client.Nick}, IP: {e.Client.IPAddress}, Logout Date: {e.Date.ToShortDateString()} {e.Date.ToLongTimeString()}");
             refreshClientList();
         }
 
         private void newClient(ClientConnectionArguments e)
         {
             Session.Clients.Add(new Chat.Core.ClientItem() { ClientId = e.Client.ClientId, Nick = e.Client.Nick, IPAddress = e.Client.IPAddress });
+            setMessage($"Login => Nick: {e.Client.Nick}, IP: {e.Client.IPAddress}, Login Date: {e.Date.ToShortDateString()} {e.Date.ToLongTimeString()}");
             refreshClientList();
         }
 
@@ -68,7 +71,12 @@ namespace ChatServer
         private void newMessage(ClientSendMessageArguments e)
         {
             string to = e.Message.To == 0 ? string.Empty : "- " + Session.Clients.First(c => c.ClientId == e.Message.To).Nick;
-            txtMessages.Text += $@"{e.Client.Nick} {to}: {e.Message.Content}{Environment.NewLine}";
+            setMessage($@"{e.Client.Nick} {to}: {e.Message.Content} [{e.Date.ToShortTimeString()}]");
+        }
+
+        private void setMessage(string message)
+        {
+            txtMessages.Text += $@"{message}{Environment.NewLine}";
             txtMessages.SelectionStart = txtMessages.Text.Length;
             txtMessages.ScrollToCaret();
         }
@@ -102,6 +110,9 @@ namespace ChatServer
                     server.ClientConnected += new dgClientConnected(clientConnection);
 
                     server.Start();
+                    string hostName = Dns.GetHostName();
+                    var addressList = Dns.GetHostByName(hostName).AddressList;
+                    setMessage($"Server started => IP: {(addressList.Length > 0 ? addressList[0].ToString() : "hostName")} Port: {portNo}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
                     btnStart.Text = "Stop";
                     btnStart.BackColor = Color.Crimson;
                     BackColor = Color.GhostWhite;
@@ -109,6 +120,9 @@ namespace ChatServer
                 else
                 {
                     server.Stop();
+                    string hostName = Dns.GetHostName();
+                    var addressList = Dns.GetHostByName(hostName).AddressList;
+                    setMessage($"Server stopped => IP: {(addressList.Length > 0 ? addressList[0].ToString() : "hostName")} Port: {txtPortNo.Text}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
                     btnStart.Text = "Start";
                     btnStart.BackColor = Color.LimeGreen;
                     BackColor = Color.AliceBlue;

@@ -38,10 +38,10 @@ namespace ChatClient
             sendMessage();
         }
 
-        public void ReceivedMessage(Chat.Core.Message message)
+        public void ReceivedMessage(Chat.Core.Message message, DateTime date)
         {
             var fromClient = Session.Clients.First(c => c.ClientId == message.From);
-            txtMessages.Text += $@"{fromClient.Nick}: {message.Content}{Environment.NewLine}";
+            txtMessages.Text += $@"{fromClient.Nick}: {message.Content} [{date.ToShortTimeString()}]{Environment.NewLine}";
         }
 
         private void txtMessages_TextChanged(object sender, EventArgs e)

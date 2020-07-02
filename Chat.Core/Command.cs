@@ -24,4 +24,11 @@ namespace Chat.Core
         Block = 8,
         Unblock = 9
     }
+
+    public enum ClientEvent
+    {
+        Login = 2,
+        Logout = 3,
+        Refresh = 10
+    }
 }

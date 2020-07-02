@@ -72,12 +72,15 @@ namespace ChatClient
         private void newMessage(MessageReceivingArguments e)
         {
             if (e.Message.To == 0)
-                txtMessages.Text += $@"{e.To.Nick}: {e.Message.Content}{Environment.NewLine}";
+            {
+                var to = Session.Clients.First(c => c.ClientId == e.Message.From);
+                txtMessages.Text += $@"{to.Nick}: {e.Message.Content} [{e.Date.ToShortTimeString()}]{Environment.NewLine}";
+            }
             else
             {
                 long clientId = e.Message.To == Session.Client.ClientId ? e.Message.From : e.Message.To;
                 var form = openPriveteMessage(clientId);
-                form.ReceivedMessage(e.Message);
+                form.ReceivedMessage(e.Message, e.Date);
             }
             txtMessages.SelectionStart = txtMessages.Text.Length;
             txtMessages.ScrollToCaret();

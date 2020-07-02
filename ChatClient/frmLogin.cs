@@ -31,12 +31,12 @@ namespace ChatClient
             }
             if (string.IsNullOrEmpty(txtNick.Text))
             {
-                errorProvider1.SetError(txtIPAddress, "Cannot be empty");
+                errorProvider1.SetError(txtNick, "Cannot be empty");
                 result = false;
             }
             if (string.IsNullOrEmpty(txtPortNo.Text))
             {
-                errorProvider1.SetError(txtIPAddress, "Cannot be empty");
+                errorProvider1.SetError(txtPortNo, "Cannot be empty");
                 result = false;
             }
             else if (!int.TryParse(txtPortNo.Text, out portNo))

@@ -22,15 +22,17 @@ namespace Chat.Core
         private Message message;
 
         public Message Message { get => message; set => message = value; }
-        public ClientItem To { get; set; }
 
-        public MessageReceivingArguments(Message message, ClientItem from)
+        public MessageReceivingArguments(Message message)
         {
-            this.Message = message;
-            this.To = from;
+            Message = message;
+            date = DateTime.Now;
         }
+
+        public DateTime Date { get { return date; } }
+        private DateTime date;
     }
-    
+
     public class ClientItem
     {
         public long ClientId { get; set; }
@@ -42,5 +44,7 @@ namespace Chat.Core
     {
         public List<ClientItem> Clients { get; set; }
         public ClientItem Client { get; set; }
+        public ClientItem ProcessClient { get; set; }
+        public ClientEvent ClientEvent { get; set; }
     }
 }
