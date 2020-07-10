@@ -309,6 +309,11 @@ namespace Chat.Core.Server
                             startByte1 = true;
                         else if (startByte1 && !startByte2 && b == (START_BYTE + 1))
                             startByte2 = true;
+                        else
+                        {
+                            startByte1 = false;
+                            startByte2 = false;
+                        }
 
                         if (!startByte1 || !startByte2)
                             continue;
@@ -338,81 +343,13 @@ namespace Chat.Core.Server
                         startByte2 = false;
                         endByte = false;
 
-                        ClientItem clientItem;
-                        string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
-                        Command command = JsonConvert.DeserializeObject<Command>(result);
-                        switch (command.Cmd)
+                        try
                         {
-                            case Cmd.Message:
-                                Message message = JsonConvert.DeserializeObject<Message>(command.Content);
-                                server.newMessageReceivedFromClient(this, message);
-                                if (message.To == 0)
-                                    foreach (var item in server.Clients.Where(c => c.Key != message.From))
-                                        item.Value.SendCommand(command.Cmd, command.Content);
-                                else
-                                    foreach (var item in server.Clients.Where(c => c.Key == message.To))
-                                        item.Value.SendCommand(command.Cmd, command.Content);
-
-                                break;
-                            case Cmd.Login:
-                                clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
-                                nick = clientItem.Nick;
-                                string originalNick = nick;
-                                ipAddress = clientItem.IPAddress;
-                                publicKey = clientItem.PublicKey;
-                                int code = 0;
-                                while (server.Clients.Any(c => c.Value.Nick == nick && c.Key != clientId))
-                                {
-                                    code++;
-                                    nick = $"{originalNick}-{code.ToString("000")}";
-                                }
-                                if (server.ClientConnected != null)
-                                    server.ClientConnected(new ClientConnectionArguments(this));
-                                foreach (var item in server.Clients)
-                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
-                                    {
-                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
-                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
-                                        ClientEvent = ClientEvent.Login
-                                    }));
-                                break;
-                            case Cmd.Logout:
-                                foreach (var item in server.Clients.Where(c => c.Key != clientId))
-                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
-                                    {
-                                        Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
-                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
-                                        ClientEvent = ClientEvent.Logout
-                                    }));
-                                if (server.ClientDisconnected != null)
-                                    server.ClientDisconnected(new ClientConnectionArguments(this));
-                                break;
-                            case Cmd.SetNick:
-                                nick = command.Content;
-                                foreach (var item in server.Clients)
-                                    item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
-                                    {
-                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
-                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
-                                        ClientEvent = ClientEvent.Refresh
-                                    }));
-                                break;
-                            case Cmd.Command:
-                                break;
-                            case Cmd.UserList:
-                                break;
-                            case Cmd.ServerStop:
-                                break;
-                            case Cmd.Block:
-                                break;
-                            case Cmd.Unblock:
-                                break;
-                            default:
-                                break;
+                            string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
+                            Command command = JsonConvert.DeserializeObject<Command>(result);
+                            receivedCommand(command);
                         }
+                        catch { }
                     }
                     catch (Exception)
                     {
@@ -433,6 +370,85 @@ namespace Chat.Core.Server
                 }
                 server.clientConnectionClosed(this);
                 connectionClosed_event();
+            }
+
+            private void receivedCommand(Command command)
+            {
+                ClientItem clientItem;
+                switch (command.Cmd)
+                {
+                    case Cmd.Message:
+                        if (blockStatus)
+                            break;
+                        Message message = JsonConvert.DeserializeObject<Message>(command.Content);
+                        server.newMessageReceivedFromClient(this, message);
+                        if (message.To == 0)
+                            foreach (var item in server.Clients.Where(c => c.Key != message.From))
+                                item.Value.SendCommand(command.Cmd, command.Content);
+                        else
+                            foreach (var item in server.Clients.Where(c => c.Key == message.To))
+                                item.Value.SendCommand(command.Cmd, command.Content);
+
+                        break;
+                    case Cmd.Login:
+                        clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
+                        nick = clientItem.Nick;
+                        string originalNick = nick;
+                        ipAddress = clientItem.IPAddress;
+                        publicKey = clientItem.PublicKey;
+                        int code = 0;
+                        while (server.Clients.Any(c => c.Value.Nick == nick && c.Key != clientId))
+                        {
+                            code++;
+                            nick = $"{originalNick}-{code.ToString("000")}";
+                        }
+                        if (server.ClientConnected != null)
+                            server.ClientConnected(new ClientConnectionArguments(this));
+                        foreach (var item in server.Clients)
+                            item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                            {
+                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
+                                ClientEvent = ClientEvent.Login
+                            }));
+                        break;
+                    case Cmd.Logout:
+                        foreach (var item in server.Clients.Where(c => c.Key != clientId))
+                            item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                            {
+                                Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
+                                ClientEvent = ClientEvent.Logout
+                            }));
+                        if (server.ClientDisconnected != null)
+                            server.ClientDisconnected(new ClientConnectionArguments(this));
+                        break;
+                    case Cmd.SetNick:
+                        nick = command.Content;
+                        foreach (var item in server.Clients)
+                            item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                            {
+                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
+                                ClientEvent = ClientEvent.Refresh
+                            }));
+                        break;
+                    case Cmd.Command:
+                        break;
+                    case Cmd.UserList:
+                        break;
+                    case Cmd.ServerStop:
+                        break;
+                    case Cmd.Block:
+                        break;
+                    case Cmd.Unblock:
+                        break;
+                    default:
+                        break;
+                }
             }
 
             private void connectionClosed_event()

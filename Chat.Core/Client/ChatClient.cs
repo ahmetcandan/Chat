@@ -174,6 +174,11 @@ namespace Chat.Core.Client
                         startByte1 = true;
                     else if (startByte1 && !startByte2 && b == (START_BYTE + 1))
                         startByte2 = true;
+                    else
+                    {
+                        startByte1 = false;
+                        startByte2 = false;
+                    }
 
                     if (!startByte1 || !startByte2)
                         continue;
@@ -203,43 +208,13 @@ namespace Chat.Core.Client
                     startByte2 = false;
                     endByte = false;
 
-                    ClientItem clientItem;
-                    string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
-                    Command command = JsonConvert.DeserializeObject<Command>(result);
-                    switch (command.Cmd)
+                    try
                     {
-                        case Cmd.Message:
-                            Message message = JsonConvert.DeserializeObject<Message>(command.Content);
-                            if (message.To == ClientId)
-                                message.Content = message.Content.Decrypt(privateKey);
-                            if (message.To == 0 || message.To == clientId || message.From == clientId)
-                                newMessageReceivedTrigger(message);
-                            break;
-                        case Cmd.Login:
-                            break;
-                        case Cmd.Logout:
-                            break;
-                        case Cmd.SetNick:
-                            break;
-                        case Cmd.Command:
-                            break;
-                        case Cmd.UserList:
-                            var response = JsonConvert.DeserializeObject<ClientListResponse>(command.Content);
-                            clients = response.Clients;
-                            clientListRefreshTrigger(response);
-                            break;
-                        case Cmd.ServerStop:
-                            serverStoppedTrigger();
-                            break;
-                        case Cmd.Block:
-                            blockStatus = true;
-                            break;
-                        case Cmd.Unblock:
-                            blockStatus = false;
-                            break;
-                        default:
-                            break;
+                        string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
+                        Command command = JsonConvert.DeserializeObject<Command>(result);
+                        receivedCommand(command);
                     }
+                    catch { }
                 }
                 catch (Exception)
                 {
@@ -247,6 +222,44 @@ namespace Chat.Core.Client
                 }
             }
             working = false;
+        }
+
+        private void receivedCommand(Command command)
+        {
+            switch (command.Cmd)
+            {
+                case Cmd.Message:
+                    Message message = JsonConvert.DeserializeObject<Message>(command.Content);
+                    if (message.To == ClientId)
+                        message.Content = message.Content.Decrypt(privateKey);
+                    if (message.To == 0 || message.To == clientId || message.From == clientId)
+                        newMessageReceivedTrigger(message);
+                    break;
+                case Cmd.Login:
+                    break;
+                case Cmd.Logout:
+                    break;
+                case Cmd.SetNick:
+                    break;
+                case Cmd.Command:
+                    break;
+                case Cmd.UserList:
+                    var response = JsonConvert.DeserializeObject<ClientListResponse>(command.Content);
+                    clients = response.Clients;
+                    clientListRefreshTrigger(response);
+                    break;
+                case Cmd.ServerStop:
+                    serverStoppedTrigger();
+                    break;
+                case Cmd.Block:
+                    blockStatus = true;
+                    break;
+                case Cmd.Unblock:
+                    blockStatus = false;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void newMessageReceivedTrigger(Message message)
