@@ -5,11 +5,13 @@ using System.Data;
 using System.Diagnostics.Tracing;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Chat.Core;
 using Chat.Core.Client;
+using Chat.Core.Cryptography;
 using Chat.Core.Server;
 
 namespace ChatClient
@@ -31,7 +33,7 @@ namespace ChatClient
                 Application.Exit();
                 return;
             }
-            Text = $"Chat | {Session.Client.Nick}";
+            Text = $"Client | Chat [{Session.Client.Nick}]";
             Session.Client.NewMessgeReceived += new dgNewMessageReceived(newMessageReceived);
             Session.Client.ClientListRefresh += new dgClientListRefresh(clientListRefresh);
             Session.Client.ServerStopped += new dgServerStopped(() => Invoke(new dgServerStopped(serverStopped)));
@@ -59,7 +61,7 @@ namespace ChatClient
         {
             Session.Clients = response.Clients;
             lvClients.Items.Clear();
-            Text = response.Client.Nick;
+            Text = $"Client | Chat [{response.Client.Nick}]";
             foreach (var client in response.Clients)
             {
                 ListViewItem item = new ListViewItem();
@@ -73,12 +75,13 @@ namespace ChatClient
         {
             if (e.Message.To == 0)
             {
-                var to = Session.Clients.First(c => c.ClientId == e.Message.From);
-                txtMessages.Text += $@"{to.Nick}: {e.Message.Content} [{e.Date.ToShortTimeString()}]{Environment.NewLine}";
+                var fromClient = Session.Clients.First(c => c.ClientId == e.Message.From);
+                txtMessages.Text += $@"{fromClient.Nick}: {e.Message.Content} [{e.Date.ToShortTimeString()}]{Environment.NewLine}";
             }
             else
             {
                 long clientId = e.Message.To == Session.Client.ClientId ? e.Message.From : e.Message.To;
+                var clientItem = Session.Clients.First(c => c.ClientId == clientId);
                 var form = openPriveteMessage(clientId);
                 form.ReceivedMessage(e.Message, e.Date);
             }

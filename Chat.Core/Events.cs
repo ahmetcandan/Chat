@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Chat.Core.Cryptography;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,9 +37,24 @@ namespace Chat.Core
 
     public class ClientItem
     {
+        public ClientItem()
+        {
+
+        }
+
+        public ClientItem(long ClientId, string Nick, string IPAddress, string PublicKey)
+        {
+            this.ClientId = ClientId;
+            this.Nick = Nick;
+            this.IPAddress = IPAddress;
+            this.publickey = PublicKey;
+        }
+
         public long ClientId { get; set; }
         public string Nick { get; set; }
         public string IPAddress { get; set; }
+        public string PublicKey { get { return publickey; } set { publickey = value; } }
+        private string publickey;
     }
 
     public class ClientListResponse

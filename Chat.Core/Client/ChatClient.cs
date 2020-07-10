@@ -1,4 +1,5 @@
-﻿using Chat.Core.Server;
+﻿using Chat.Core.Cryptography;
+using Chat.Core.Server;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,8 @@ namespace Chat.Core.Client
     {
         private const byte START_BYTE = (byte)60;
         private const byte END_BYTE = (byte)62;
+        private string privateKey;
+        public string publicKey;
 
         public bool BlockStatus { get { return blockStatus; } }
         private bool blockStatus = false;
@@ -46,6 +50,9 @@ namespace Chat.Core.Client
         private volatile bool working = false;
         public ChatClient(string serverIPAddress, int serverPort, string nick, string clientIPAddress)
         {
+            var rsa = new RSACryptoServiceProvider();
+            privateKey = rsa.ToXmlString(true);
+            publicKey = rsa.ToXmlString(false);
             this.nick = nick;
             this.serverIPAddress = serverIPAddress;
             this.serverPort = serverPort;
@@ -65,7 +72,7 @@ namespace Chat.Core.Client
                 thread = new Thread(new ThreadStart(tRun));
                 working = true;
                 thread.Start();
-                login(new ClientItem { ClientId = 0, IPAddress = clientIPAddress, Nick = nick });
+                login(new ClientItem(0, nick, clientIPAddress, publicKey));
                 return true;
             }
             catch (Exception)
@@ -98,12 +105,23 @@ namespace Chat.Core.Client
 
         public bool SendMessage(string message)
         {
-            return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
+            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message }))))
+            {
+                newMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = 0 });
+                return true;
+            }
+            return false;
         }
 
         public bool SendMessage(string message, long toClientId)
         {
-            return sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = toClientId, Content = message })));
+            var toClient = clients.First(c => c.ClientId == toClientId);
+            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = toClientId, Content = message.Encrypt(toClient.PublicKey) }))))
+            {
+                newMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = toClientId });
+                return true;
+            }
+            return false;
         }
 
         public bool SetNick(string nickName)
@@ -123,12 +141,14 @@ namespace Chat.Core.Client
             {
                 if (blockStatus && cmd == Cmd.Message)
                     return false;
-                string _result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
-                byte[] bMessage = Encoding.BigEndianUnicode.GetBytes(_result);
-                byte[] b = new byte[bMessage.Length + 2];
-                Array.Copy(bMessage, 0, b, 1, bMessage.Length);
+                string result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
+                byte[] bMessage = Encoding.BigEndianUnicode.GetBytes(result);
+                byte[] b = new byte[bMessage.Length + 4];
+                Array.Copy(bMessage, 0, b, 2, bMessage.Length);
                 b[0] = START_BYTE;
-                b[b.Length - 1] = END_BYTE;
+                b[1] = START_BYTE + 1;
+                b[b.Length - 2] = END_BYTE;
+                b[b.Length - 1] = END_BYTE + 1;
                 binaryWriter.Write(b);
                 networkStream.Flush();
                 return true;
@@ -139,6 +159,10 @@ namespace Chat.Core.Client
             }
         }
 
+        bool startByte1 = false;
+        bool startByte2 = false;
+        bool endByte = false;
+
         private void tRun()
         {
             while (working)
@@ -146,11 +170,39 @@ namespace Chat.Core.Client
                 try
                 {
                     byte b = binaryReader.ReadByte();
-                    if (b != START_BYTE)
-                        break;
+                    if (!startByte1 && !startByte2 && b == START_BYTE)
+                        startByte1 = true;
+                    else if (startByte1 && !startByte2 && b == (START_BYTE + 1))
+                        startByte2 = true;
+
+                    if (!startByte1 || !startByte2)
+                        continue;
                     List<byte> bList = new List<byte>();
-                    while ((b = binaryReader.ReadByte()) != END_BYTE)
-                        bList.Add(b);
+                    while (!endByte)
+                    {
+                        byte b1 = binaryReader.ReadByte();
+                        byte b2;
+                        if (!endByte && b1 == END_BYTE)
+                        {
+                            b2 = binaryReader.ReadByte();
+                            if (b2 == (END_BYTE + 1))
+                            {
+                                endByte = true;
+                                break;
+                            }
+                            else
+                            {
+                                bList.Add(b1);
+                                bList.Add(b2);
+                            }
+                        }
+                        else
+                            bList.Add(b1);
+                    }
+                    startByte1 = false;
+                    startByte2 = false;
+                    endByte = false;
+
                     ClientItem clientItem;
                     string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
                     Command command = JsonConvert.DeserializeObject<Command>(result);
@@ -158,6 +210,8 @@ namespace Chat.Core.Client
                     {
                         case Cmd.Message:
                             Message message = JsonConvert.DeserializeObject<Message>(command.Content);
+                            if (message.To == ClientId)
+                                message.Content = message.Content.Decrypt(privateKey);
                             if (message.To == 0 || message.To == clientId || message.From == clientId)
                                 newMessageReceivedTrigger(message);
                             break;

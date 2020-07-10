@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Chat.Core.Cryptography;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -195,6 +196,8 @@ namespace Chat.Core.Server
             private const byte START_BYTE = (byte)60;
             private const byte END_BYTE = (byte)62;
 
+            public string PublicKey { get { return publicKey; } }
+            private string publicKey;
             public bool BlockStatus { get { return blockStatus; } }
             private bool blockStatus = false;
             public long ClientId { get { return clientId; } }
@@ -275,10 +278,12 @@ namespace Chat.Core.Server
                 {
                     string _result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
                     byte[] bMesaj = Encoding.BigEndianUnicode.GetBytes(_result);
-                    byte[] b = new byte[bMesaj.Length + 2];
-                    Array.Copy(bMesaj, 0, b, 1, bMesaj.Length);
+                    byte[] b = new byte[bMesaj.Length + 4];
+                    Array.Copy(bMesaj, 0, b, 2, bMesaj.Length);
                     b[0] = START_BYTE;
-                    b[b.Length - 1] = END_BYTE;
+                    b[1] = START_BYTE + 1;
+                    b[b.Length - 2] = END_BYTE;
+                    b[b.Length - 1] = END_BYTE + 1;
                     binaryWriter.Write(b);
                     networkStram.Flush();
                     return true;
@@ -289,6 +294,10 @@ namespace Chat.Core.Server
                 }
             }
 
+            bool startByte1 = false;
+            bool startByte2 = false;
+            bool endByte = false;
+
             private void tRun()
             {
                 while (working)
@@ -296,12 +305,40 @@ namespace Chat.Core.Server
                     try
                     {
                         byte b = binaryReader.ReadByte();
-                        if (b != START_BYTE)
+                        if (!startByte1 && !startByte2 && b == START_BYTE)
+                            startByte1 = true;
+                        else if (startByte1 && !startByte2 && b == (START_BYTE + 1))
+                            startByte2 = true;
+
+                        if (!startByte1 || !startByte2)
                             continue;
-                        ClientItem clientItem;
                         List<byte> bList = new List<byte>();
-                        while ((b = binaryReader.ReadByte()) != END_BYTE)
-                            bList.Add(b);
+                        while (!endByte)
+                        {
+                            byte b1 = binaryReader.ReadByte();
+                            byte b2;
+                            if (!endByte && b1 == END_BYTE)
+                            {
+                                b2 = binaryReader.ReadByte();
+                                if (b2 == (END_BYTE + 1))
+                                {
+                                    endByte = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    bList.Add(b1);
+                                    bList.Add(b2);
+                                }
+                            }
+                            else
+                                bList.Add(b1);
+                        }
+                        startByte1 = false;
+                        startByte2 = false;
+                        endByte = false;
+
+                        ClientItem clientItem;
                         string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
                         Command command = JsonConvert.DeserializeObject<Command>(result);
                         switch (command.Cmd)
@@ -310,10 +347,10 @@ namespace Chat.Core.Server
                                 Message message = JsonConvert.DeserializeObject<Message>(command.Content);
                                 server.newMessageReceivedFromClient(this, message);
                                 if (message.To == 0)
-                                    foreach (var item in server.Clients)
+                                    foreach (var item in server.Clients.Where(c => c.Key != message.From))
                                         item.Value.SendCommand(command.Cmd, command.Content);
                                 else
-                                    foreach (var item in server.Clients.Where(c => c.Key == message.To || c.Key == message.From))
+                                    foreach (var item in server.Clients.Where(c => c.Key == message.To))
                                         item.Value.SendCommand(command.Cmd, command.Content);
 
                                 break;
@@ -322,6 +359,7 @@ namespace Chat.Core.Server
                                 nick = clientItem.Nick;
                                 string originalNick = nick;
                                 ipAddress = clientItem.IPAddress;
+                                publicKey = clientItem.PublicKey;
                                 int code = 0;
                                 while (server.Clients.Any(c => c.Value.Nick == nick && c.Key != clientId))
                                 {
@@ -333,9 +371,9 @@ namespace Chat.Core.Server
                                 foreach (var item in server.Clients)
                                     item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                                     {
-                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress },
-                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress },
+                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
+                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
                                         ClientEvent = ClientEvent.Login
                                     }));
                                 break;
@@ -343,9 +381,9 @@ namespace Chat.Core.Server
                                 foreach (var item in server.Clients.Where(c => c.Key != clientId))
                                     item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                                     {
-                                        Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress },
-                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress },
+                                        Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
+                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
                                         ClientEvent = ClientEvent.Logout
                                     }));
                                 if (server.ClientDisconnected != null)
@@ -356,9 +394,9 @@ namespace Chat.Core.Server
                                 foreach (var item in server.Clients)
                                     item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                                     {
-                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress }).ToList(),
-                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress },
-                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress },
+                                        Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
+                                        Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
+                                        ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
                                         ClientEvent = ClientEvent.Refresh
                                     }));
                                 break;

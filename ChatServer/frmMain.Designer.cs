@@ -41,18 +41,18 @@
             this.clientId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.nickName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ipAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.menuClients = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.banToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.notifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.menuClients = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.banToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.grpConnection.SuspendLayout();
             this.grpMessages.SuspendLayout();
             this.frpUsers.SuspendLayout();
+            this.menuClients.SuspendLayout();
             this.notifyMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
-            this.menuClients.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
@@ -90,7 +90,7 @@
             this.txtMessages.Name = "txtMessages";
             this.txtMessages.ReadOnly = true;
             this.txtMessages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtMessages.Size = new System.Drawing.Size(533, 377);
+            this.txtMessages.Size = new System.Drawing.Size(655, 377);
             this.txtMessages.TabIndex = 7;
             // 
             // grpConnection
@@ -128,7 +128,7 @@
             this.grpMessages.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grpMessages.Location = new System.Drawing.Point(363, 12);
             this.grpMessages.Name = "grpMessages";
-            this.grpMessages.Size = new System.Drawing.Size(560, 418);
+            this.grpMessages.Size = new System.Drawing.Size(682, 418);
             this.grpMessages.TabIndex = 10;
             this.grpMessages.TabStop = false;
             this.grpMessages.Text = "Messages";
@@ -186,6 +186,22 @@
             this.ipAddress.Text = "IP";
             this.ipAddress.Width = 168;
             // 
+            // menuClients
+            // 
+            this.menuClients.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.banToolStripMenuItem});
+            this.menuClients.Name = "menuClients";
+            this.menuClients.Size = new System.Drawing.Size(99, 26);
+            this.menuClients.Opening += new System.ComponentModel.CancelEventHandler(this.menuClients_Opening);
+            // 
+            // banToolStripMenuItem
+            // 
+            this.banToolStripMenuItem.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.banToolStripMenuItem.Name = "banToolStripMenuItem";
+            this.banToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.banToolStripMenuItem.Text = "Ban";
+            this.banToolStripMenuItem.Click += new System.EventHandler(this.banToolStripMenuItem_Click);
+            // 
             // notifyIcon1
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
@@ -210,28 +226,12 @@
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // menuClients
-            // 
-            this.menuClients.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.banToolStripMenuItem});
-            this.menuClients.Name = "menuClients";
-            this.menuClients.Size = new System.Drawing.Size(181, 48);
-            this.menuClients.Opening += new System.ComponentModel.CancelEventHandler(this.menuClients_Opening);
-            // 
-            // banToolStripMenuItem
-            // 
-            this.banToolStripMenuItem.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.banToolStripMenuItem.Name = "banToolStripMenuItem";
-            this.banToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.banToolStripMenuItem.Text = "Ban";
-            this.banToolStripMenuItem.Click += new System.EventHandler(this.banToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
-            this.ClientSize = new System.Drawing.Size(935, 442);
+            this.ClientSize = new System.Drawing.Size(1057, 442);
             this.Controls.Add(this.frpUsers);
             this.Controls.Add(this.grpMessages);
             this.Controls.Add(this.grpConnection);
@@ -246,9 +246,9 @@
             this.grpMessages.ResumeLayout(false);
             this.grpMessages.PerformLayout();
             this.frpUsers.ResumeLayout(false);
+            this.menuClients.ResumeLayout(false);
             this.notifyMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
-            this.menuClients.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

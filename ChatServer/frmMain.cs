@@ -71,7 +71,7 @@ namespace ChatServer
         private void newMessage(ClientSendMessageArguments e)
         {
             string to = e.Message.To == 0 ? string.Empty : "- " + Session.Clients.First(c => c.ClientId == e.Message.To).Nick;
-            setMessage($@"{e.Client.Nick} {to}: {e.Message.Content} [{e.Date.ToShortTimeString()}]");
+            setMessage($@"{e.Client.Nick} {to}: {(e.Message.To == 0 ? e.Message.Content : "#######")} [{e.Date.ToShortTimeString()}]");
         }
 
         private void setMessage(string message)

@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Client\ChatClient.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="Cryptography\RSA.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,5 +57,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

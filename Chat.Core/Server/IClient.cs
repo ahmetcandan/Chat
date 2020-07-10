@@ -14,5 +14,6 @@ namespace Chat.Core.Server
         bool HasConnection { get; }
         bool SendMessage(string mesaj);
         void CloseConnection();
+        string PublicKey { get; }
     }
 }
