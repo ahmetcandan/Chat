@@ -1,4 +1,4 @@
-C# TCP Client - Server Chat Application
+<h3>C# TCP Client - Server Chat Application</h3>
 
 This project is Client - Server messaging application using TCP with C#. 
 Private messaging is encrypted with the RSA algorithm.
