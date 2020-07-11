@@ -10,6 +10,7 @@ namespace Chat.Core.Cryptography
     public static class RSA
     {
         private static UnicodeEncoding _encoder = new UnicodeEncoding();
+
         public static string Decrypt(this string data, string privateKey)
         {
             var rsa = new RSACryptoServiceProvider();
@@ -46,14 +47,28 @@ namespace Chat.Core.Cryptography
             return sb.ToString();
         }
 
+        public static byte[] _Decrypt(this byte[] data, string privateKey)
+        {
+            var rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(privateKey);
+            return rsa.Decrypt(data, false);
+        }
+        
+        public static byte[] _Encrypt(this byte[] data, string publicKey)
+        {
+            var rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(publicKey);
+            return rsa.Encrypt(data, false).ToArray();
+        }
+
         public static byte[] ByteArray(this string data)
         {
-            return Encoding.ASCII.GetBytes(data);
+            return _encoder.GetBytes(data);
         }
 
         public static string ByteArrayToString(this byte[] data)
         {
-            return Encoding.ASCII.GetString(data);
+            return _encoder.GetString(data);
         }
     }
 }
