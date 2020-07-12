@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace Chat.Core
 {
-    public class Command
-    {
-        public Cmd Cmd { get; set; }
-        public string Content { get; set; }
-    }
-
     public enum Cmd
     {
         Message = 1,
@@ -22,7 +16,8 @@ namespace Chat.Core
         UserList = 6,
         ServerStop = 7,
         Block = 8,
-        Unblock = 9
+        Unblock = 9,
+        SetStatus = 10
     }
 
     public enum ClientEvent
@@ -30,5 +25,14 @@ namespace Chat.Core
         Login = 2,
         Logout = 3,
         Refresh = 10
+    }
+
+    public enum ClientStatus
+    {
+        Available = 1,
+        Busy = 2,
+        Away = 3,
+        DoNotDisturb = 4,
+        Invisible = 5
     }
 }

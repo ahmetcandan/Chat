@@ -15,5 +15,7 @@ namespace Chat.Core.Server
         bool SendMessage(string mesaj);
         void CloseConnection();
         string PublicKey { get; }
+        ClientStatus Status { get; }
+        void SetStatus(ClientStatus status);
     }
 }

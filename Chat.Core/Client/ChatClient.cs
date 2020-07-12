@@ -21,6 +21,15 @@ namespace Chat.Core.Client
         private string privateKey;
         public string publicKey;
 
+        private ClientStatus status;
+        public ClientStatus Status { get { return status; } }
+
+        public void SetStatus(ClientStatus status)
+        {
+            this.status = status;
+            sendCommand(Cmd.SetStatus, ((int)status).ToString());
+        }
+
         public bool BlockStatus { get { return blockStatus; } }
         private bool blockStatus = false;
         public string ServerIPAddress { get { return serverIPAddress; } }
@@ -72,7 +81,7 @@ namespace Chat.Core.Client
                 thread = new Thread(new ThreadStart(tRun));
                 working = true;
                 thread.Start();
-                login(new ClientItem(0, nick, clientIPAddress, publicKey));
+                login(new ClientItem(0, nick, clientIPAddress, publicKey, status));
                 return true;
             }
             catch (Exception)
@@ -100,6 +109,7 @@ namespace Chat.Core.Client
 
         private bool login(ClientItem client)
         {
+            this.status = ClientStatus.Available;
             return sendCommand(Cmd.Login, JsonConvert.SerializeObject(client));
         }
 
@@ -256,6 +266,8 @@ namespace Chat.Core.Client
                     break;
                 case Cmd.Unblock:
                     blockStatus = false;
+                    break;
+                case Cmd.SetStatus:
                     break;
                 default:
                     break;

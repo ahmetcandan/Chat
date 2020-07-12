@@ -30,10 +30,12 @@ namespace ChatClient
             frmLogin.ShowDialog();
             if (Session.Client == null)
             {
+                close = true;
                 Application.Exit();
                 return;
             }
             Text = $"Client | Chat [{Session.Client.Nick}]";
+            openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
             Session.Client.NewMessgeReceived += new dgNewMessageReceived(newMessageReceived);
             Session.Client.ClientListRefresh += new dgClientListRefresh(clientListRefresh);
             Session.Client.ServerStopped += new dgServerStopped(() => Invoke(new dgServerStopped(serverStopped)));
@@ -61,12 +63,22 @@ namespace ChatClient
         {
             Session.Clients = response.Clients;
             lvClients.Items.Clear();
-            Text = $"Client | Chat [{response.Client.Nick}]";
-            foreach (var client in response.Clients)
+            Text = $"Client | Chat [{response.Client.Nick} -  {response.Client.Status.ClientStatusToString()}]";
+            notifyIcon1.Text = Text;
+            ImageList imageList = new ImageList();
+            imageList.ImageSize = new Size(18, 18);
+            imageList.Images.Add(((int)ClientStatus.Available).ToString(), global::ChatClient.Properties.Resources.awailable);
+            imageList.Images.Add(((int)ClientStatus.Away).ToString(), global::ChatClient.Properties.Resources.away);
+            imageList.Images.Add(((int)ClientStatus.Busy).ToString(), global::ChatClient.Properties.Resources.busy);
+            imageList.Images.Add(((int)ClientStatus.DoNotDisturb).ToString(), global::ChatClient.Properties.Resources.donotdistrub);
+            imageList.Images.Add(((int)ClientStatus.Invisible).ToString(), global::ChatClient.Properties.Resources.invisible);
+            lvClients.SmallImageList = imageList;
+            foreach (var client in response.Clients.Where(c => c.ClientId != Session.Client.ClientId))
             {
                 ListViewItem item = new ListViewItem();
-                item.Text = client.ClientId.ToString();
-                item.SubItems.Add(client.Nick);
+                item.Text = client.Nick;
+                item.ImageIndex = imageList.Images.IndexOfKey(((int)client.Status).ToString());
+                item.SubItems.Add(client.ClientId.ToString());
                 lvClients.Items.Add(item);
             }
         }
@@ -75,8 +87,12 @@ namespace ChatClient
         {
             if (e.Message.To == 0)
             {
+                if (Session.Client.Status != ClientStatus.DoNotDisturb)
+                    TopMost = true;
                 var fromClient = Session.Clients.First(c => c.ClientId == e.Message.From);
                 txtMessages.Text += $@"{fromClient.Nick}: {e.Message.Content} [{e.Date.ToShortTimeString()}]{Environment.NewLine}";
+                if (Session.Client.Status != ClientStatus.DoNotDisturb)
+                    TopMost = false;
             }
             else
             {
@@ -96,7 +112,12 @@ namespace ChatClient
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Session.HasConnection)
+            if (!close)
+            {
+                e.Cancel = true;
+                Hide();
+            }
+            else if (Session.HasConnection)
             {
                 if (Session.Client != null)
                     Session.Client.Disconnected();
@@ -119,7 +140,7 @@ namespace ChatClient
         {
             if (lvClients.SelectedItems.Count == 1)
             {
-                long clientId = long.Parse(lvClients.SelectedItems[0].Text);
+                long clientId = long.Parse(lvClients.SelectedItems[0].SubItems[1].Text);
                 if (clientId == Session.Client.ClientId)
                     return;
                 openPriveteMessage(clientId);
@@ -135,8 +156,11 @@ namespace ChatClient
                 if (form.Created)
                 {
                     form.Show();
-                    form.TopMost = true;
-                    form.TopMost = false;
+                    if (Session.Client.Status != ClientStatus.DoNotDisturb)
+                    {
+                        form.TopMost = true;
+                        form.TopMost = false;
+                    }
                 }
                 else
                 {
@@ -152,6 +176,75 @@ namespace ChatClient
                 privateMessageFormList.Add(clientId, form);
                 form.Show();
                 return form;
+            }
+        }
+
+        bool close = false;
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            close = true;
+            Application.Exit();
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Show();
+        }
+
+        private void availableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setStatus(ClientStatus.Available);
+        }
+
+        private void busyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setStatus(ClientStatus.Busy);
+        }
+
+        private void doNotDistrubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setStatus(ClientStatus.DoNotDisturb);
+        }
+
+        private void invisibleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setStatus(ClientStatus.Invisible);
+        }
+
+        private void awayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setStatus(ClientStatus.Away);
+        }
+
+        private void setStatus(ClientStatus status)
+        {
+            Session.Client.SetStatus(status);
+            switch (status)
+            {
+                case ClientStatus.Available:
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
+                    break;
+                case ClientStatus.Busy:
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.busy;
+                    break;
+                case ClientStatus.Away:
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.away;
+                    break;
+                case ClientStatus.DoNotDisturb:
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.donotdistrub;
+                    break;
+                case ClientStatus.Invisible:
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.invisible;
+                    break;
+                default:
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
+                    break;
             }
         }
     }

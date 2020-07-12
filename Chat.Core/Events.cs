@@ -1,4 +1,5 @@
 ﻿using Chat.Core.Cryptography;
+using Chat.Core.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,35 +34,5 @@ namespace Chat.Core
 
         public DateTime Date { get { return date; } }
         private DateTime date;
-    }
-
-    public class ClientItem
-    {
-        public ClientItem()
-        {
-
-        }
-
-        public ClientItem(long ClientId, string Nick, string IPAddress, string PublicKey)
-        {
-            this.ClientId = ClientId;
-            this.Nick = Nick;
-            this.IPAddress = IPAddress;
-            this.publickey = PublicKey;
-        }
-
-        public long ClientId { get; set; }
-        public string Nick { get; set; }
-        public string IPAddress { get; set; }
-        public string PublicKey { get { return publickey; } set { publickey = value; } }
-        private string publickey;
-    }
-
-    public class ClientListResponse
-    {
-        public List<ClientItem> Clients { get; set; }
-        public ClientItem Client { get; set; }
-        public ClientItem ProcessClient { get; set; }
-        public ClientEvent ClientEvent { get; set; }
     }
 }

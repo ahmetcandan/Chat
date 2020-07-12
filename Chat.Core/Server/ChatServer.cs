@@ -196,6 +196,14 @@ namespace Chat.Core.Server
             private const byte START_BYTE = (byte)60;
             private const byte END_BYTE = (byte)62;
 
+            private ClientStatus status;
+            public ClientStatus Status { get { return status; } }
+
+            public void SetStatus(ClientStatus status)
+            {
+                this.status = status;
+            }
+
             public string PublicKey { get { return publicKey; } }
             private string publicKey;
             public bool BlockStatus { get { return blockStatus; } }
@@ -227,6 +235,7 @@ namespace Chat.Core.Server
                 this.server = server;
                 this.soket = clientSocket;
                 this.clientId = clientId;
+                this.status = ClientStatus.Available;
             }
 
             public bool Start()
@@ -407,9 +416,9 @@ namespace Chat.Core.Server
                         foreach (var item in server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
+                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
                                 ClientEvent = ClientEvent.Login
                             }));
                         break;
@@ -417,9 +426,9 @@ namespace Chat.Core.Server
                         foreach (var item in server.Clients.Where(c => c.Key != clientId))
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
+                                Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
                                 ClientEvent = ClientEvent.Logout
                             }));
                         if (server.ClientDisconnected != null)
@@ -430,9 +439,9 @@ namespace Chat.Core.Server
                         foreach (var item in server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey },
+                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
                                 ClientEvent = ClientEvent.Refresh
                             }));
                         break;
@@ -445,6 +454,18 @@ namespace Chat.Core.Server
                     case Cmd.Block:
                         break;
                     case Cmd.Unblock:
+                        break;
+                    case Cmd.SetStatus:
+                        int statusCode = int.Parse(command.Content);
+                        SetStatus((ClientStatus)statusCode);
+                        foreach (var item in server.Clients)
+                            item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
+                            {
+                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
+                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
+                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
+                                ClientEvent = ClientEvent.Refresh
+                            }));
                         break;
                     default:
                         break;

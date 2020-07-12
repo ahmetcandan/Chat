@@ -112,10 +112,11 @@ namespace ChatServer
                     server.Start();
                     string hostName = Dns.GetHostName();
                     var addressList = Dns.GetHostByName(hostName).AddressList;
-                    setMessage($"Server started => IP: {(addressList.Length > 0 ? addressList[0].ToString() : "hostName")} Port: {portNo}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
+                    setMessage($"Server started => IP: {(addressList.Length > 0 ? addressList[0].ToString() : hostName)} Port: {portNo}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
                     btnStart.Text = "Stop";
                     btnStart.BackColor = Color.Crimson;
                     BackColor = Color.GhostWhite;
+                    notifyIcon1.Text = $"Chat | Server [{(addressList.Length > 0 ? addressList[0].ToString() : hostName)}:{portNo}]";
                 }
                 else
                 {
@@ -127,6 +128,7 @@ namespace ChatServer
                     btnStart.BackColor = Color.LimeGreen;
                     BackColor = Color.AliceBlue;
                     lvClients.Items.Clear();
+                    notifyIcon1.Text = $"Chat | Server";
                 }
 
                 start = !start;
@@ -138,14 +140,22 @@ namespace ChatServer
             }
         }
 
+        bool close = false;
+
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (start && server != null)
+            if (!close)
+            {
+                e.Cancel = true;
+                Hide();
+            }
+            else if (start && server != null)
                 server.Stop();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            close = true;
             Application.Exit();
         }
 
@@ -168,6 +178,17 @@ namespace ChatServer
                 client.Unblock();
             else
                 client.Block();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Show();
+        }
+
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
         }
     }
 
