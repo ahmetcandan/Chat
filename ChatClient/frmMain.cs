@@ -35,7 +35,7 @@ namespace ChatClient
                 return;
             }
             Text = $"Client | Chat [{Session.Client.Nick}]";
-            openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
+            openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.line;
             Session.Client.NewMessgeReceived += new dgNewMessageReceived(newMessageReceived);
             Session.Client.ClientListRefresh += new dgClientListRefresh(clientListRefresh);
             Session.Client.ServerStopped += new dgServerStopped(() => Invoke(new dgServerStopped(serverStopped)));
@@ -53,6 +53,7 @@ namespace ChatClient
 
         private void serverStopped()
         {
+            openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.gray;
             txtMessage.Clear();
             txtMessage.ReadOnly = true;
             lvClients.Items.Clear();
@@ -67,11 +68,11 @@ namespace ChatClient
             notifyIcon1.Text = Text;
             ImageList imageList = new ImageList();
             imageList.ImageSize = new Size(18, 18);
-            imageList.Images.Add(((int)ClientStatus.Available).ToString(), global::ChatClient.Properties.Resources.awailable);
-            imageList.Images.Add(((int)ClientStatus.Away).ToString(), global::ChatClient.Properties.Resources.away);
-            imageList.Images.Add(((int)ClientStatus.Busy).ToString(), global::ChatClient.Properties.Resources.busy);
-            imageList.Images.Add(((int)ClientStatus.DoNotDisturb).ToString(), global::ChatClient.Properties.Resources.donotdistrub);
-            imageList.Images.Add(((int)ClientStatus.Invisible).ToString(), global::ChatClient.Properties.Resources.invisible);
+            imageList.Images.Add(((int)ClientStatus.Available).ToString(), global::ChatClient.Properties.Resources.line);
+            imageList.Images.Add(((int)ClientStatus.Away).ToString(), global::ChatClient.Properties.Resources.yellow);
+            imageList.Images.Add(((int)ClientStatus.Busy).ToString(), global::ChatClient.Properties.Resources.red);
+            imageList.Images.Add(((int)ClientStatus.DoNotDisturb).ToString(), global::ChatClient.Properties.Resources.dnd);
+            imageList.Images.Add(((int)ClientStatus.Invisible).ToString(), global::ChatClient.Properties.Resources.gray);
             lvClients.SmallImageList = imageList;
             foreach (var client in response.Clients.Where(c => c.ClientId != Session.Client.ClientId))
             {
@@ -228,22 +229,22 @@ namespace ChatClient
             switch (status)
             {
                 case ClientStatus.Available:
-                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.line;
                     break;
                 case ClientStatus.Busy:
-                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.busy;
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.red;
                     break;
                 case ClientStatus.Away:
-                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.away;
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.yellow;
                     break;
                 case ClientStatus.DoNotDisturb:
-                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.donotdistrub;
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.dnd;
                     break;
                 case ClientStatus.Invisible:
-                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.invisible;
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.gray;
                     break;
                 default:
-                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
+                    openToolStripMenuItem.Image = global::ChatClient.Properties.Resources.line;
                     break;
             }
         }

@@ -63,9 +63,9 @@ namespace ChatClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap awailable {
+        internal static System.Drawing.Bitmap dnd {
             get {
-                object obj = ResourceManager.GetObject("awailable", resourceCulture);
+                object obj = ResourceManager.GetObject("dnd", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace ChatClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap away {
+        internal static System.Drawing.Bitmap gray {
             get {
-                object obj = ResourceManager.GetObject("away", resourceCulture);
+                object obj = ResourceManager.GetObject("gray", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace ChatClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap busy {
+        internal static System.Drawing.Bitmap line {
             get {
-                object obj = ResourceManager.GetObject("busy", resourceCulture);
+                object obj = ResourceManager.GetObject("line", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace ChatClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap donotdistrub {
+        internal static System.Drawing.Bitmap red {
             get {
-                object obj = ResourceManager.GetObject("donotdistrub", resourceCulture);
+                object obj = ResourceManager.GetObject("red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace ChatClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap invisible {
+        internal static System.Drawing.Bitmap yellow {
             get {
-                object obj = ResourceManager.GetObject("invisible", resourceCulture);
+                object obj = ResourceManager.GetObject("yellow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.txtMessages = new System.Windows.Forms.TextBox();
-            this.btnSendMessage = new System.Windows.Forms.Button();
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.lvClients = new System.Windows.Forms.ListView();
             this.Nick = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -41,6 +40,7 @@
             this.setStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnSendMessage = new System.Windows.Forms.Button();
             this.availableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.busyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.awayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,20 +63,6 @@
             this.txtMessages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtMessages.Size = new System.Drawing.Size(529, 446);
             this.txtMessages.TabIndex = 4;
-            // 
-            // btnSendMessage
-            // 
-            this.btnSendMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSendMessage.BackColor = System.Drawing.Color.LimeGreen;
-            this.btnSendMessage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSendMessage.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSendMessage.Location = new System.Drawing.Point(478, 464);
-            this.btnSendMessage.Name = "btnSendMessage";
-            this.btnSendMessage.Size = new System.Drawing.Size(63, 23);
-            this.btnSendMessage.TabIndex = 5;
-            this.btnSendMessage.Text = "Send";
-            this.btnSendMessage.UseVisualStyleBackColor = false;
-            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
             // 
             // txtMessage
             // 
@@ -129,13 +115,13 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.notifyMenu.Name = "notifyMenu";
-            this.notifyMenu.Size = new System.Drawing.Size(126, 76);
+            this.notifyMenu.Size = new System.Drawing.Size(181, 98);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -148,24 +134,38 @@
             this.doNotDistrubToolStripMenuItem,
             this.invisibleToolStripMenuItem});
             this.setStatusToolStripMenuItem.Name = "setStatusToolStripMenuItem";
-            this.setStatusToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.setStatusToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setStatusToolStripMenuItem.Text = "Set Status";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(122, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // btnSendMessage
+            // 
+            this.btnSendMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSendMessage.BackColor = System.Drawing.Color.LimeGreen;
+            this.btnSendMessage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSendMessage.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSendMessage.Location = new System.Drawing.Point(478, 464);
+            this.btnSendMessage.Name = "btnSendMessage";
+            this.btnSendMessage.Size = new System.Drawing.Size(63, 23);
+            this.btnSendMessage.TabIndex = 5;
+            this.btnSendMessage.Text = "Send";
+            this.btnSendMessage.UseVisualStyleBackColor = false;
+            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            // 
             // availableToolStripMenuItem
             // 
-            this.availableToolStripMenuItem.Image = global::ChatClient.Properties.Resources.awailable;
+            this.availableToolStripMenuItem.Image = global::ChatClient.Properties.Resources.line;
             this.availableToolStripMenuItem.Name = "availableToolStripMenuItem";
             this.availableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.availableToolStripMenuItem.Text = "Available";
@@ -173,7 +173,7 @@
             // 
             // busyToolStripMenuItem
             // 
-            this.busyToolStripMenuItem.Image = global::ChatClient.Properties.Resources.busy;
+            this.busyToolStripMenuItem.Image = global::ChatClient.Properties.Resources.red;
             this.busyToolStripMenuItem.Name = "busyToolStripMenuItem";
             this.busyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.busyToolStripMenuItem.Text = "Busy";
@@ -181,7 +181,7 @@
             // 
             // awayToolStripMenuItem
             // 
-            this.awayToolStripMenuItem.Image = global::ChatClient.Properties.Resources.away;
+            this.awayToolStripMenuItem.Image = global::ChatClient.Properties.Resources.yellow;
             this.awayToolStripMenuItem.Name = "awayToolStripMenuItem";
             this.awayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.awayToolStripMenuItem.Text = "Away";
@@ -189,7 +189,7 @@
             // 
             // doNotDistrubToolStripMenuItem
             // 
-            this.doNotDistrubToolStripMenuItem.Image = global::ChatClient.Properties.Resources.donotdistrub;
+            this.doNotDistrubToolStripMenuItem.Image = global::ChatClient.Properties.Resources.dnd;
             this.doNotDistrubToolStripMenuItem.Name = "doNotDistrubToolStripMenuItem";
             this.doNotDistrubToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.doNotDistrubToolStripMenuItem.Text = "Do not distrub";
@@ -197,7 +197,7 @@
             // 
             // invisibleToolStripMenuItem
             // 
-            this.invisibleToolStripMenuItem.Image = global::ChatClient.Properties.Resources.invisible;
+            this.invisibleToolStripMenuItem.Image = global::ChatClient.Properties.Resources.gray;
             this.invisibleToolStripMenuItem.Name = "invisibleToolStripMenuItem";
             this.invisibleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.invisibleToolStripMenuItem.Text = "Invisible";
