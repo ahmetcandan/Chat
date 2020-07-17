@@ -165,15 +165,15 @@ namespace Chat.Core.Server
 
             public void tListen()
             {
-                Socket istemciSoketi;
+                Socket clientSocket;
                 while (working)
                 {
                     try
                     {
-                        istemciSoketi = listenerSocket.AcceptSocket();
-                        if (istemciSoketi.Connected)
+                        clientSocket = listenerSocket.AcceptSocket();
+                        if (clientSocket.Connected)
                         {
-                            try { server.newClientSocketConnected(istemciSoketi); }
+                            try { server.newClientSocketConnected(clientSocket); }
                             catch (Exception) { }
                         }
                     }
