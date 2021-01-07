@@ -102,6 +102,16 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="bin\Debug\awailable.png" />
+    <None Include="bin\Debug\away.png" />
+    <None Include="bin\Debug\busy.png" />
+    <None Include="bin\Debug\dnd.png" />
+    <None Include="bin\Debug\donotdistrub.png" />
+    <None Include="bin\Debug\gray.png" />
+    <None Include="bin\Debug\invisible.png" />
+    <None Include="bin\Debug\line.png" />
+    <None Include="bin\Debug\red.png" />
+    <None Include="bin\Debug\yellow.png" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
