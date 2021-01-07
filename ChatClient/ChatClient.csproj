@@ -123,17 +123,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Debug\away.png" />
-    <None Include="bin\Debug\awailable.png" />
-    <None Include="bin\Debug\busy.png" />
-    <None Include="bin\Debug\donotdistrub.png" />
-    <None Include="bin\Debug\invisible.png" />
-    <None Include="bin\Debug\dnd.png" />
-    <None Include="bin\Debug\gray.png" />
-    <None Include="bin\Debug\line.png" />
-    <None Include="bin\Debug\red.png" />
-    <None Include="bin\Debug\yellow.png" />
     <Content Include="chat.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
