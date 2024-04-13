@@ -1,11 +1,4 @@
-﻿using Chat.Core.Cryptography;
-using Chat.Core.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Chat.Core
 {
@@ -22,17 +15,15 @@ namespace Chat.Core
         { return Message; }
         public void SetMessage(Message value)
         { Message = value; }
-        private Message message;
 
-        public Message Message { get => message; set => message = value; }
+        public Message Message { get; set; }
 
         public MessageReceivingArguments(Message message)
         {
             Message = message;
-            date = DateTime.Now;
+            Date = DateTime.Now;
         }
 
-        public DateTime Date { get { return date; } }
-        private DateTime date;
+        public DateTime Date { get; }
     }
 }

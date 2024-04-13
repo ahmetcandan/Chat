@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Chat.Core.Server;
+using System;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Chat.Core.Server;
 
 namespace ChatServer
 {
     public partial class frmMain : Form
     {
-        Chat.Core.Server.ChatServer server;
-        bool start = false;
+        private Chat.Core.Server.ChatServer server;
+        private bool start = false;
         public frmMain()
         {
             InitializeComponent();
@@ -60,8 +56,10 @@ namespace ChatServer
             lvClients.Items.Clear();
             foreach (var client in Session.Clients)
             {
-                ListViewItem item = new ListViewItem();
-                item.Text = client.ClientId.ToString();
+                ListViewItem item = new ListViewItem
+                {
+                    Text = client.ClientId.ToString()
+                };
                 item.SubItems.Add(client.Nick);
                 item.SubItems.Add(client.IPAddress);
                 lvClients.Items.Add(item);
@@ -140,7 +138,7 @@ namespace ChatServer
             }
         }
 
-        bool close = false;
+        private bool close = false;
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -192,7 +190,7 @@ namespace ChatServer
         }
     }
 
-    class ListClientItem
+    internal class ListClientItem
     {
         public long Id { get; set; }
         public string Nick { get; set; }

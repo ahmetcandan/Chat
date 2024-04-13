@@ -1,24 +1,16 @@
-﻿using System;
+﻿using Chat.Core;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics.Tracing;
 using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Chat.Core;
-using Chat.Core.Client;
-using Chat.Core.Cryptography;
-using Chat.Core.Server;
 
 namespace ChatClient
 {
     public partial class frmMain : Form
     {
-        Dictionary<long, frmMessage> privateMessageFormList = new Dictionary<long, frmMessage>();
+        private readonly Dictionary<long, frmMessage> privateMessageFormList = new Dictionary<long, frmMessage>();
         public frmMain()
         {
             InitializeComponent();
@@ -66,8 +58,10 @@ namespace ChatClient
             lvClients.Items.Clear();
             Text = $"Client | Chat [{response.Client.Nick} -  {response.Client.Status.ClientStatusToString()}]";
             notifyIcon1.Text = Text;
-            ImageList imageList = new ImageList();
-            imageList.ImageSize = new Size(18, 18);
+            ImageList imageList = new ImageList
+            {
+                ImageSize = new Size(18, 18)
+            };
             imageList.Images.Add(((int)ClientStatus.Available).ToString(), global::ChatClient.Properties.Resources.line);
             imageList.Images.Add(((int)ClientStatus.Away).ToString(), global::ChatClient.Properties.Resources.yellow);
             imageList.Images.Add(((int)ClientStatus.Busy).ToString(), global::ChatClient.Properties.Resources.red);
@@ -76,9 +70,11 @@ namespace ChatClient
             lvClients.SmallImageList = imageList;
             foreach (var client in response.Clients.Where(c => c.ClientId != Session.Client.ClientId))
             {
-                ListViewItem item = new ListViewItem();
-                item.Text = client.Nick;
-                item.ImageIndex = imageList.Images.IndexOfKey(((int)client.Status).ToString());
+                ListViewItem item = new ListViewItem
+                {
+                    Text = client.Nick,
+                    ImageIndex = imageList.Images.IndexOfKey(((int)client.Status).ToString())
+                };
                 item.SubItems.Add(client.ClientId.ToString());
                 lvClients.Items.Add(item);
             }
@@ -120,8 +116,7 @@ namespace ChatClient
             }
             else if (Session.HasConnection)
             {
-                if (Session.Client != null)
-                    Session.Client.Disconnected();
+                Session.Client?.Disconnected();
             }
         }
 
@@ -180,7 +175,7 @@ namespace ChatClient
             }
         }
 
-        bool close = false;
+        private bool close = false;
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {

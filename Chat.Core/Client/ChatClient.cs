@@ -1,5 +1,4 @@
 ﻿using Chat.Core.Cryptography;
-using Chat.Core.Server;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,41 +9,35 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Chat.Core.Client
 {
     public class ChatClient
     {
-        private string privateKey;
+        private readonly string privateKey;
         public string publicKey;
 
-        private ClientStatus status;
-        public ClientStatus Status { get { return status; } }
+        public ClientStatus Status { get; private set; }
 
         public void SetStatus(ClientStatus status)
         {
-            this.status = status;
+            Status = status;
             sendCommand(Cmd.SetStatus, ((int)status).ToString());
         }
 
-        public bool BlockStatus { get { return blockStatus; } }
-        private bool blockStatus = false;
-        public string ServerIPAddress { get { return serverIPAddress; } }
-        private string serverIPAddress;
-        public string Nick { get { return nick; } }
-        private string nick;
-        public long ClientId { get { return clientId; } }
-        private long clientId;
-        public string ClientIPAddress { get { return clientIPAddress; } }
-        private string clientIPAddress;
-        List<ClientItem> clients = new List<ClientItem>();
-        public int ServerPort
-        {
-            get { return serverPort; }
-            set { serverPort = value; }
-        }
-        private int serverPort;
+        public bool BlockStatus { get; private set; } = false;
+
+        public string ServerIPAddress { get; }
+
+        public string Nick { get; private set; }
+
+        public long ClientId { get; private set; }
+
+        public string ClientIPAddress { get; }
+
+        private List<ClientItem> clients = new List<ClientItem>();
+        public int ServerPort { get; set; }
+
         public event dgNewMessageReceived NewMessgeReceived;
         public event dgClientListRefresh ClientListRefresh;
         public event dgServerStopped ServerStopped;
@@ -60,10 +53,10 @@ namespace Chat.Core.Client
             var rsa = new RSACryptoServiceProvider();
             privateKey = rsa.ToXmlString(true);
             publicKey = rsa.ToXmlString(false);
-            this.nick = nick;
-            this.serverIPAddress = serverIPAddress;
-            this.serverPort = serverPort;
-            this.clientIPAddress = clientIPAddress;
+            Nick = nick;
+            ServerIPAddress = serverIPAddress;
+            ServerPort = serverPort;
+            ClientIPAddress = clientIPAddress;
         }
 
         public bool Connect()
@@ -71,7 +64,7 @@ namespace Chat.Core.Client
             try
             {
                 clientConnection = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIPAddress), serverPort);
+                IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(ServerIPAddress), ServerPort);
                 clientConnection.Connect(ipep);
                 networkStream = new NetworkStream(clientConnection);
                 binaryReader = new BinaryReader(networkStream, Encoding.BigEndianUnicode);
@@ -79,7 +72,7 @@ namespace Chat.Core.Client
                 thread = new Thread(new ThreadStart(tRun));
                 working = true;
                 thread.Start();
-                login(new ClientItem(0, nick, clientIPAddress, publicKey, status));
+                login(new ClientItem(0, Nick, ClientIPAddress, publicKey, Status));
                 return true;
             }
             catch (Exception)
@@ -107,13 +100,13 @@ namespace Chat.Core.Client
 
         private bool login(ClientItem client)
         {
-            this.status = ClientStatus.Available;
+            Status = ClientStatus.Available;
             return sendCommand(Cmd.Login, JsonConvert.SerializeObject(client));
         }
 
         public bool SendMessage(string message)
         {
-            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message }))))
+            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = 0, Content = message })))
             {
                 newMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = 0 });
                 return true;
@@ -124,7 +117,7 @@ namespace Chat.Core.Client
         public bool SendMessage(string message, long toClientId)
         {
             var toClient = clients.First(c => c.ClientId == toClientId);
-            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = toClientId, Content = message.Encrypt(toClient.PublicKey) }))))
+            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = toClientId, Content = message.Encrypt(toClient.PublicKey) })))
             {
                 newMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = toClientId });
                 return true;
@@ -134,7 +127,7 @@ namespace Chat.Core.Client
 
         public bool SetNick(string nickName)
         {
-            nick = nickName;
+            Nick = nickName;
             return sendCommand(Cmd.SetNick, nickName);
         }
 
@@ -147,7 +140,7 @@ namespace Chat.Core.Client
         {
             try
             {
-                if (blockStatus && cmd == Cmd.Message)
+                if (BlockStatus && cmd == Cmd.Message)
                     return false;
                 string result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
                 binaryWriter.Write(result);
@@ -191,7 +184,7 @@ namespace Chat.Core.Client
                     Message message = JsonConvert.DeserializeObject<Message>(command.Content);
                     if (message.To == ClientId)
                         message.Content = message.Content.Decrypt(privateKey);
-                    if (message.To == 0 || message.To == clientId || message.From == clientId)
+                    if (message.To == 0 || message.To == ClientId || message.From == ClientId)
                         newMessageReceivedTrigger(message);
                     break;
                 case Cmd.Login:
@@ -211,10 +204,10 @@ namespace Chat.Core.Client
                     serverStoppedTrigger();
                     break;
                 case Cmd.Block:
-                    blockStatus = true;
+                    BlockStatus = true;
                     break;
                 case Cmd.Unblock:
-                    blockStatus = false;
+                    BlockStatus = false;
                     break;
                 case Cmd.SetStatus:
                     break;
@@ -225,21 +218,18 @@ namespace Chat.Core.Client
 
         private void newMessageReceivedTrigger(Message message)
         {
-            if (NewMessgeReceived != null)
-                NewMessgeReceived(new MessageReceivingArguments(message));
+            NewMessgeReceived?.Invoke(new MessageReceivingArguments(message));
         }
 
         private void serverStoppedTrigger()
         {
-            if (ServerStopped != null)
-                ServerStopped();
+            ServerStopped?.Invoke();
         }
 
         private void clientListRefreshTrigger(ClientListResponse response)
         {
-            clientId = response.Client.ClientId;
-            if (ClientListRefresh != null)
-                ClientListRefresh(response);
+            ClientId = response.Client.ClientId;
+            ClientListRefresh?.Invoke(response);
         }
     }
 }

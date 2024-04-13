@@ -1,13 +1,5 @@
-﻿using Chat.Core;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+﻿using System;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ChatClient
@@ -19,7 +11,7 @@ namespace ChatClient
             InitializeComponent();
         }
 
-        int portNo = 0;
+        private int portNo = 0;
 
         private bool validation()
         {
@@ -27,7 +19,7 @@ namespace ChatClient
             if (string.IsNullOrEmpty(txtIPAddress.Text))
             {
                 errorProvider1.SetError(txtIPAddress, "Cannot be empty");
-                result =  false;
+                result = false;
             }
             if (string.IsNullOrEmpty(txtNick.Text))
             {

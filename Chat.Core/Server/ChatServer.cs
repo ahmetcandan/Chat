@@ -1,5 +1,4 @@
-﻿using Chat.Core.Cryptography;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,17 +6,13 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Chat.Core.Server
 {
     public class ChatServer
     {
-        public int Port
-        {
-            get { return port; }
-        }
-        private int port;
+        public int Port { get; }
+
         public event dgClientConnected ClientConnected;
         public event dgClientDisconnected ClientDisconnected;
         public event dgNewMessageReceivedFromClient NewMessageReceivedFromClient;
@@ -25,14 +20,14 @@ namespace Chat.Core.Server
         private long lastClientId = 0;
         public SortedList<long, Client> Clients { get; set; }
         private volatile bool working;
-        private object objSenk = new object();
-        private ConnectionListener connectionListener;
+        private readonly object objSenk = new object();
+        private readonly ConnectionListener connectionListener;
 
         public ChatServer(int port)
         {
-            this.port = port;
-            this.Clients = new SortedList<long, Client>();
-            this.connectionListener = new ConnectionListener(this, port);
+            Port = port;
+            Clients = new SortedList<long, Client>();
+            connectionListener = new ConnectionListener(this, port);
         }
 
         public void Start()
@@ -82,8 +77,7 @@ namespace Chat.Core.Server
 
         private void newMessageReceivedFromClient(Client client, Message message)
         {
-            if (NewMessageReceivedFromClient != null)
-                NewMessageReceivedFromClient(new ClientSendMessageArguments(client, message));
+            NewMessageReceivedFromClient?.Invoke(new ClientSendMessageArguments(client, message));
         }
 
         private void clientConnectionClosed(Client client)
@@ -96,9 +90,9 @@ namespace Chat.Core.Server
 
         private class ConnectionListener
         {
-            private ChatServer server;
+            private readonly ChatServer server;
             private TcpListener listenerSocket;
-            private int port;
+            private readonly int port;
             private volatile bool working = false;
             private volatile Thread thread;
             public ConnectionListener(ChatServer server, int port)
@@ -193,24 +187,22 @@ namespace Chat.Core.Server
 
         public class Client : IClient
         {
-            private ClientStatus status;
-            public ClientStatus Status { get { return status; } }
+            public ClientStatus Status { get; private set; }
 
             public void SetStatus(ClientStatus status)
             {
-                this.status = status;
+                Status = status;
             }
 
-            public string PublicKey { get { return publicKey; } }
-            private string publicKey;
-            public bool BlockStatus { get { return blockStatus; } }
-            private bool blockStatus = false;
-            public long ClientId { get { return clientId; } }
-            private long clientId;
-            public string Nick { get { return nick; } }
-            private string nick;
-            public string IPAddress { get { return ipAddress; } }
-            private string ipAddress;
+            public string PublicKey { get; private set; }
+
+            public bool BlockStatus { get; private set; } = false;
+
+            public long ClientId { get; }
+
+            public string Nick { get; private set; }
+
+            public string IPAddress { get; private set; }
 
             public bool HasConnection
             {
@@ -219,8 +211,8 @@ namespace Chat.Core.Server
             public event dgConnectionClosed connectionClosed;
             public event dgNewMessageReceived newMessageReceived;
 
-            private Socket soket;
-            private ChatServer server;
+            private readonly Socket soket;
+            private readonly ChatServer server;
             private NetworkStream networkStram;
             private BinaryReader binaryReader;
             private BinaryWriter binaryWriter;
@@ -230,9 +222,9 @@ namespace Chat.Core.Server
             public Client(ChatServer server, Socket clientSocket, long clientId)
             {
                 this.server = server;
-                this.soket = clientSocket;
-                this.clientId = clientId;
-                this.status = ClientStatus.Available;
+                soket = clientSocket;
+                ClientId = clientId;
+                Status = ClientStatus.Available;
             }
 
             public bool Start()
@@ -270,12 +262,12 @@ namespace Chat.Core.Server
 
             public void CloseConnection()
             {
-                this.Stop();
+                Stop();
             }
 
             public bool SendMessage(string message)
             {
-                return SendCommand(Cmd.Message, JsonConvert.SerializeObject((new Message { From = ClientId, To = 0, Content = message })));
+                return SendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = 0, Content = message }));
             }
 
             public bool SendCommand(Cmd cmd, string content)
@@ -336,7 +328,7 @@ namespace Chat.Core.Server
                 switch (command.Cmd)
                 {
                     case Cmd.Message:
-                        if (blockStatus)
+                        if (BlockStatus)
                             break;
                         Message message = JsonConvert.DeserializeObject<Message>(command.Content);
                         server.newMessageReceivedFromClient(this, message);
@@ -350,18 +342,17 @@ namespace Chat.Core.Server
                         break;
                     case Cmd.Login:
                         clientItem = JsonConvert.DeserializeObject<ClientItem>(command.Content);
-                        nick = clientItem.Nick;
-                        string originalNick = nick;
-                        ipAddress = clientItem.IPAddress;
-                        publicKey = clientItem.PublicKey;
+                        Nick = clientItem.Nick;
+                        string originalNick = Nick;
+                        IPAddress = clientItem.IPAddress;
+                        PublicKey = clientItem.PublicKey;
                         int code = 0;
-                        while (server.Clients.Any(c => c.Value.Nick == nick && c.Key != clientId))
+                        while (server.Clients.Any(c => c.Value.Nick == Nick && c.Key != ClientId))
                         {
                             code++;
-                            nick = $"{originalNick}-{code.ToString("000")}";
+                            Nick = $"{originalNick}-{code:000}";
                         }
-                        if (server.ClientConnected != null)
-                            server.ClientConnected(new ClientConnectionArguments(this));
+                        server.ClientConnected?.Invoke(new ClientConnectionArguments(this));
                         foreach (var item in server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
@@ -372,19 +363,18 @@ namespace Chat.Core.Server
                             }));
                         break;
                     case Cmd.Logout:
-                        foreach (var item in server.Clients.Where(c => c.Key != clientId))
+                        foreach (var item in server.Clients.Where(c => c.Key != ClientId))
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients.Where(c => c.Key != clientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
+                                Clients = (from c in server.Clients.Where(c => c.Key != ClientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
                                 Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
                                 ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
                                 ClientEvent = ClientEvent.Logout
                             }));
-                        if (server.ClientDisconnected != null)
-                            server.ClientDisconnected(new ClientConnectionArguments(this));
+                        server.ClientDisconnected?.Invoke(new ClientConnectionArguments(this));
                         break;
                     case Cmd.SetNick:
-                        nick = command.Content;
+                        Nick = command.Content;
                         foreach (var item in server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
@@ -423,25 +413,23 @@ namespace Chat.Core.Server
 
             private void connectionClosed_event()
             {
-                if (connectionClosed != null)
-                    connectionClosed();
+                connectionClosed?.Invoke();
             }
 
             internal void newMessageReceived_event(Message message)
             {
-                if (newMessageReceived != null)
-                    newMessageReceived(new MessageReceivingArguments(message));
+                newMessageReceived?.Invoke(new MessageReceivingArguments(message));
             }
 
             public void Block()
             {
-                blockStatus = true;
+                BlockStatus = true;
                 SendCommand(Cmd.Block, string.Empty);
             }
 
             public void Unblock()
             {
-                blockStatus = false;
+                BlockStatus = false;
                 SendCommand(Cmd.Unblock, string.Empty);
             }
         }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Chat.Core
 {
@@ -24,17 +20,15 @@ namespace Chat.Core
             this.ClientId = ClientId;
             this.Nick = Nick;
             this.IPAddress = IPAddress;
-            this.publickey = PublicKey;
-            this.status = status;
+            this.PublicKey = PublicKey;
+            Status = status;
         }
 
         public long ClientId { get; set; }
         public string Nick { get; set; }
         public string IPAddress { get; set; }
-        public string PublicKey { get { return publickey; } set { publickey = value; } }
-        private string publickey;
-        private ClientStatus status;
-        public ClientStatus Status { get { return status; } set { status = value; } }
+        public string PublicKey { get; set; }
+        public ClientStatus Status { get; set; }
     }
 
     public class ClientListResponse

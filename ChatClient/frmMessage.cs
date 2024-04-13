@@ -1,19 +1,13 @@
 ﻿using Chat.Core;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ChatClient
 {
     public partial class frmMessage : Form
     {
-        ClientItem toClient;
+        private readonly ClientItem toClient;
         public frmMessage(ClientItem toClient)
         {
             InitializeComponent();

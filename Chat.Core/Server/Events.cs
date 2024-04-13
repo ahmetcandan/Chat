@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Chat.Core.Server
 {
@@ -12,45 +8,30 @@ namespace Chat.Core.Server
 
     public class ClientConnectionArguments : EventArgs
     {
-        public IClient Client
-        {
-            get { return client; }
-        }
-        private IClient client;
+        public IClient Client { get; }
 
         public ClientConnectionArguments(IClient client)
         {
-            this.client = client;
-            date = DateTime.Now;
+            Client = client;
+            Date = DateTime.Now;
         }
 
-        public DateTime Date { get { return date; } }
-        private DateTime date;
+        public DateTime Date { get; }
     }
 
     public class ClientSendMessageArguments : EventArgs
     {
-        public IClient Client
-        {
-            get { return client; }
-        }
-        private IClient client;
+        public IClient Client { get; }
 
-        public Message Message
-        {
-            get { return message; }
-            set { message = value; }
-        }
-        private Message message;
+        public Message Message { get; set; }
 
-        public DateTime Date { get { return date; } }
-        private DateTime date;
+        public DateTime Date { get; }
 
         public ClientSendMessageArguments(IClient client, Message message)
         {
-            this.client = client;
-            this.message = message;
-            date = DateTime.Now;
+            Client = client;
+            Message = message;
+            Date = DateTime.Now;
         }
     }
 }
