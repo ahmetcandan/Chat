@@ -13,7 +13,7 @@ namespace Chat.Client;
 public class ChatClient
 {
     private readonly string _privateKey;
-    public readonly string _publicKey;
+    private readonly string _publicKey;
 
     public ClientStatus Status { get; private set; }
 
@@ -103,9 +103,9 @@ public class ChatClient
 
     public bool SendMessage(string message)
     {
-        if (SendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = 0, Content = message })))
+        if (SendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message(ClientId, message))))
         {
-            NewMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = 0 });
+            NewMessageReceivedTrigger(new Message(ClientId, message));
             return true;
         }
         return false;
@@ -114,9 +114,9 @@ public class ChatClient
     public bool SendMessage(string message, long toClientId)
     {
         var toClient = _clients.First(c => c.ClientId == toClientId);
-        if (SendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = toClientId, EncryptContent = message.Encrypt(toClient.PublicKey) })))
+        if (SendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message(ClientId, toClientId, message.Encrypt(toClient.PublicKey)))))
         {
-            NewMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = toClientId });
+            NewMessageReceivedTrigger(new Message(ClientId, toClientId, message));
             return true;
         }
         return false;
