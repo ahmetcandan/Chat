@@ -16,8 +16,6 @@ namespace Chat.Core.Client
 {
     public class ChatClient
     {
-        private const byte START_BYTE = (byte)60;
-        private const byte END_BYTE = (byte)62;
         private string privateKey;
         public string publicKey;
 
@@ -152,14 +150,7 @@ namespace Chat.Core.Client
                 if (blockStatus && cmd == Cmd.Message)
                     return false;
                 string result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
-                byte[] bMessage = Encoding.BigEndianUnicode.GetBytes(result);
-                byte[] b = new byte[bMessage.Length + 4];
-                Array.Copy(bMessage, 0, b, 2, bMessage.Length);
-                b[0] = START_BYTE;
-                b[1] = START_BYTE + 1;
-                b[b.Length - 2] = END_BYTE;
-                b[b.Length - 1] = END_BYTE + 1;
-                binaryWriter.Write(b);
+                binaryWriter.Write(result);
                 networkStream.Flush();
                 return true;
             }
@@ -169,58 +160,16 @@ namespace Chat.Core.Client
             }
         }
 
-        bool startByte1 = false;
-        bool startByte2 = false;
-        bool endByte = false;
-
         private void tRun()
         {
             while (working)
             {
                 try
                 {
-                    byte b = binaryReader.ReadByte();
-                    if (!startByte1 && !startByte2 && b == START_BYTE)
-                        startByte1 = true;
-                    else if (startByte1 && !startByte2 && b == (START_BYTE + 1))
-                        startByte2 = true;
-                    else
-                    {
-                        startByte1 = false;
-                        startByte2 = false;
-                    }
-
-                    if (!startByte1 || !startByte2)
-                        continue;
-                    List<byte> bList = new List<byte>();
-                    while (!endByte)
-                    {
-                        byte b1 = binaryReader.ReadByte();
-                        byte b2;
-                        if (!endByte && b1 == END_BYTE)
-                        {
-                            b2 = binaryReader.ReadByte();
-                            if (b2 == (END_BYTE + 1))
-                            {
-                                endByte = true;
-                                break;
-                            }
-                            else
-                            {
-                                bList.Add(b1);
-                                bList.Add(b2);
-                            }
-                        }
-                        else
-                            bList.Add(b1);
-                    }
-                    startByte1 = false;
-                    startByte2 = false;
-                    endByte = false;
-
+                    string receivedMessage = binaryReader.ReadString();
                     try
                     {
-                        string result = Encoding.BigEndianUnicode.GetString(bList.ToArray());
+                        string result = receivedMessage;
                         Command command = JsonConvert.DeserializeObject<Command>(result);
                         receivedCommand(command);
                     }
