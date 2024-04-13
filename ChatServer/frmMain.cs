@@ -163,19 +163,14 @@ namespace ChatServer
             if (lvClients.SelectedItems.Count == 1)
             {
                 long clientId = long.Parse(lvClients.SelectedItems[0].Text);
-                var client = server.Clients[clientId];
-                banToolStripMenuItem.Text = client.BlockStatus ? "Unblock" : "Block";
+                banToolStripMenuItem.Text = server.ClientBlockStatus(clientId) ? "Unblock" : "Block";
             }
         }
 
         private void banToolStripMenuItem_Click(object sender, EventArgs e)
         {
             long clientId = long.Parse(lvClients.SelectedItems[0].Text);
-            var client = server.Clients[clientId];
-            if (client.BlockStatus)
-                client.Unblock();
-            else
-                client.Block();
+            server.BlockClient(clientId);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

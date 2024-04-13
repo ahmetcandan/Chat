@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Chat.Abstraction.Enum;
+using Chat.Abstraction.Event;
+using Chat.Abstraction.Model;
+using Chat.Server.Event;
+using Newtonsoft.Json;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 
-namespace Chat.Core.Server
+namespace Chat.Server
 {
     public class ChatServer
     {
@@ -17,34 +16,34 @@ namespace Chat.Core.Server
         public event dgClientDisconnected ClientDisconnected;
         public event dgNewMessageReceivedFromClient NewMessageReceivedFromClient;
 
-        private long lastClientId = 0;
+        private long _lastClientId = 0;
         private SortedList<long, Client> Clients { get; set; }
-        private volatile bool working;
-        private readonly object objSenk = new object();
-        private readonly ConnectionListener connectionListener;
+        private volatile bool _working;
+        private readonly object _objSenk = new();
+        private readonly ConnectionListener _connectionListener;
 
         public ChatServer(int port)
         {
             Port = port;
-            Clients = new SortedList<long, Client>();
-            connectionListener = new ConnectionListener(this, port);
+            Clients = [];
+            _connectionListener = new ConnectionListener(this, port);
         }
 
         public void Start()
         {
-            if (working)
+            if (_working)
                 return;
-            if (!connectionListener.Start())
+            if (!_connectionListener.Start())
                 return;
-            working = true;
+            _working = true;
         }
 
         public void Stop()
         {
             foreach (var item in Clients)
                 item.Value.SendCommand(Cmd.ServerStop, string.Empty);
-            connectionListener.Stop();
-            working = false;
+            _connectionListener.Stop();
+            _working = false;
             try
             {
                 IList<Client> clientList = Clients.Values;
@@ -56,34 +55,34 @@ namespace Chat.Core.Server
 
             }
             Clients.Clear();
-            working = false;
+            _working = false;
         }
 
-        public bool SendMessage(IClient client, string message)
+        public static bool SendMessage(IClient client, string message)
         {
             return client.SendMessage(message);
         }
 
-        private void newClientSocketConnected(Socket clientSocket)
+        private void NewClientSocketConnected(Socket clientSocket)
         {
-            Client client = null;
-            lock (objSenk)
+            Client client;
+            lock (_objSenk)
             {
-                client = new Client(this, clientSocket, ++lastClientId);
+                client = new Client(this, clientSocket, ++_lastClientId);
                 Clients.Add(client.ClientId, client);
             }
             client.Start();
         }
 
-        private void newMessageReceivedFromClient(Client client, Message message)
+        private void NewMessageReceivedFromClient_Event(Client client, Message message)
         {
             NewMessageReceivedFromClient?.Invoke(new ClientSendMessageArguments(client, message));
         }
 
-        private void clientConnectionClosed(Client client)
+        private void ClientConnectionClosed(Client client)
         {
-            if (working)
-                lock (objSenk)
+            if (_working)
+                lock (_objSenk)
                     if (Clients.ContainsKey(client.ClientId))
                         Clients.Remove(client.ClientId);
         }
@@ -97,31 +96,31 @@ namespace Chat.Core.Server
                 client.Block();
         }
 
-        public bool ClientBlockStatus(long clientId) 
+        public bool ClientBlockStatus(long clientId)
         {
             return Clients[clientId].BlockStatus;
         }
 
         private class ConnectionListener
         {
-            private readonly ChatServer server;
-            private TcpListener listenerSocket;
-            private readonly int port;
-            private volatile bool working = false;
-            private volatile Thread thread;
+            private readonly ChatServer _server;
+            private TcpListener _listenerSocket;
+            private readonly int _port;
+            private volatile bool _working = false;
+            private volatile Thread _thread;
             public ConnectionListener(ChatServer server, int port)
             {
-                this.server = server;
-                this.port = port;
+                _server = server;
+                _port = port;
             }
 
             public bool Start()
             {
-                if (connect())
+                if (Connect())
                 {
-                    working = true;
-                    thread = new Thread(new ThreadStart(tListen));
-                    thread.Start();
+                    _working = true;
+                    _thread = new Thread(new ThreadStart(TListen));
+                    _thread.Start();
                     return true;
                 }
                 else
@@ -132,9 +131,9 @@ namespace Chat.Core.Server
             {
                 try
                 {
-                    working = false;
-                    disconnect();
-                    thread.Join();
+                    _working = false;
+                    Disconnect();
+                    _thread.Join();
                     return true;
                 }
                 catch (Exception)
@@ -143,12 +142,12 @@ namespace Chat.Core.Server
                 }
             }
 
-            private bool connect()
+            private bool Connect()
             {
                 try
                 {
-                    listenerSocket = new TcpListener(System.Net.IPAddress.Any, port);
-                    listenerSocket.Start();
+                    _listenerSocket = new TcpListener(System.Net.IPAddress.Any, _port);
+                    _listenerSocket.Start();
                     return true;
                 }
                 catch (Exception)
@@ -157,12 +156,12 @@ namespace Chat.Core.Server
                 }
             }
 
-            private bool disconnect()
+            private bool Disconnect()
             {
                 try
                 {
-                    listenerSocket.Stop();
-                    listenerSocket = null;
+                    _listenerSocket.Stop();
+                    _listenerSocket = null;
                     return true;
                 }
                 catch (Exception)
@@ -171,28 +170,28 @@ namespace Chat.Core.Server
                 }
             }
 
-            public void tListen()
+            public void TListen()
             {
                 Socket clientSocket;
-                while (working)
+                while (_working)
                 {
                     try
                     {
-                        clientSocket = listenerSocket.AcceptSocket();
+                        clientSocket = _listenerSocket.AcceptSocket();
                         if (clientSocket.Connected)
                         {
-                            try { server.newClientSocketConnected(clientSocket); }
+                            try { _server.NewClientSocketConnected(clientSocket); }
                             catch (Exception) { }
                         }
                     }
                     catch (Exception)
                     {
-                        if (working)
+                        if (_working)
                         {
-                            disconnect();
+                            Disconnect();
                             try { Thread.Sleep(1000); }
                             catch (Exception) { }
-                            connect();
+                            Connect();
                         }
                     }
                 }
@@ -220,23 +219,23 @@ namespace Chat.Core.Server
 
             public bool HasConnection
             {
-                get { return working; }
+                get { return _working; }
             }
-            public event dgConnectionClosed connectionClosed;
-            public event dgNewMessageReceived newMessageReceived;
+            public event dgConnectionClosed ConnectionClosed;
+            public event dgNewMessageReceived NewMessageReceived;
 
-            private readonly Socket soket;
-            private readonly ChatServer server;
-            private NetworkStream networkStram;
-            private BinaryReader binaryReader;
-            private BinaryWriter binaryWriter;
-            private volatile bool working = false;
-            private Thread thread;
+            private readonly Socket _soket;
+            private readonly ChatServer _server;
+            private NetworkStream _networkStram;
+            private BinaryReader _binaryReader;
+            private BinaryWriter _binaryWriter;
+            private volatile bool _working = false;
+            private Thread _thread;
 
             public Client(ChatServer server, Socket clientSocket, long clientId)
             {
-                this.server = server;
-                soket = clientSocket;
+                _server = server;
+                _soket = clientSocket;
                 ClientId = clientId;
                 Status = ClientStatus.Available;
             }
@@ -245,12 +244,12 @@ namespace Chat.Core.Server
             {
                 try
                 {
-                    networkStram = new NetworkStream(soket);
-                    binaryReader = new BinaryReader(networkStram, Encoding.BigEndianUnicode);
-                    binaryWriter = new BinaryWriter(networkStram, Encoding.BigEndianUnicode);
-                    thread = new Thread(new ThreadStart(tRun));
-                    working = true;
-                    thread.Start();
+                    _networkStram = new NetworkStream(_soket);
+                    _binaryReader = new BinaryReader(_networkStram, Encoding.BigEndianUnicode);
+                    _binaryWriter = new BinaryWriter(_networkStram, Encoding.BigEndianUnicode);
+                    _thread = new Thread(new ThreadStart(TRun));
+                    _working = true;
+                    _thread.Start();
                     return true;
                 }
                 catch (Exception)
@@ -263,10 +262,9 @@ namespace Chat.Core.Server
             {
                 try
                 {
-                    working = false;
-                    soket.Close();
-                    thread.Abort();
-                    thread.Join();
+                    _working = false;
+                    _soket.Close();
+                    _thread.Join();
                 }
                 catch (Exception)
                 {
@@ -289,8 +287,8 @@ namespace Chat.Core.Server
                 try
                 {
                     string _result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
-                    binaryWriter.Write(_result);
-                    networkStram.Flush();
+                    _binaryWriter.Write(_result);
+                    _networkStram.Flush();
                     return true;
                 }
                 catch (Exception)
@@ -299,19 +297,19 @@ namespace Chat.Core.Server
                 }
             }
 
-            private void tRun()
+            private void TRun()
             {
-                while (working)
+                while (_working)
                 {
                     try
                     {
-                        string receivedMessage = binaryReader.ReadString();
+                        string receivedMessage = _binaryReader.ReadString();
 
                         try
                         {
                             string result = receivedMessage;
                             Command command = JsonConvert.DeserializeObject<Command>(result);
-                            receivedCommand(command);
+                            ReceivedCommand(command);
                         }
                         catch { }
                     }
@@ -320,23 +318,23 @@ namespace Chat.Core.Server
                         break;
                     }
                 }
-                working = false;
+                _working = false;
                 try
                 {
-                    if (soket.Connected)
+                    if (_soket.Connected)
                     {
-                        soket.Close();
+                        _soket.Close();
                     }
                 }
                 catch (Exception)
                 {
 
                 }
-                server.clientConnectionClosed(this);
-                connectionClosed_event();
+                _server.ClientConnectionClosed(this);
+                ConnectionClosed_event();
             }
 
-            private void receivedCommand(Command command)
+            private void ReceivedCommand(Command command)
             {
                 ClientItem clientItem;
                 switch (command.Cmd)
@@ -345,12 +343,12 @@ namespace Chat.Core.Server
                         if (BlockStatus)
                             break;
                         Message message = JsonConvert.DeserializeObject<Message>(command.Content);
-                        server.newMessageReceivedFromClient(this, message);
+                        _server.NewMessageReceivedFromClient_Event(this, message);
                         if (message.To == 0)
-                            foreach (var item in server.Clients.Where(c => c.Key != message.From))
+                            foreach (var item in _server.Clients.Where(c => c.Key != message.From))
                                 item.Value.SendCommand(command.Cmd, command.Content);
                         else
-                            foreach (var item in server.Clients.Where(c => c.Key == message.To))
+                            foreach (var item in _server.Clients.Where(c => c.Key == message.To))
                                 item.Value.SendCommand(command.Cmd, command.Content);
 
                         break;
@@ -361,40 +359,40 @@ namespace Chat.Core.Server
                         IPAddress = clientItem.IPAddress;
                         PublicKey = clientItem.PublicKey;
                         int code = 0;
-                        while (server.Clients.Any(c => c.Value.Nick == Nick && c.Key != ClientId))
+                        while (_server.Clients.Any(c => c.Value.Nick == Nick && c.Key != ClientId))
                         {
                             code++;
                             Nick = $"{originalNick}-{code:000}";
                         }
-                        server.ClientConnected?.Invoke(new ClientConnectionArguments(this));
-                        foreach (var item in server.Clients)
+                        _server.ClientConnected?.Invoke(new ClientConnectionArguments(this));
+                        foreach (var item in _server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
+                                Clients = (from c in _server.Clients select new ClientItem(c.Key, c.Value.Nick, c.Value.IPAddress, c.Value.PublicKey, c.Value.Status)).ToList(),
+                                Client = new ClientItem(item.Value.ClientId, item.Value.Nick, item.Value.IPAddress, item.Value.PublicKey, item.Value.Status),
+                                ProcessClient = new ClientItem(ClientId, Nick, IPAddress, PublicKey, Status),
                                 ClientEvent = ClientEvent.Login
                             }));
                         break;
                     case Cmd.Logout:
-                        foreach (var item in server.Clients.Where(c => c.Key != ClientId))
+                        foreach (var item in _server.Clients.Where(c => c.Key != ClientId))
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients.Where(c => c.Key != ClientId) select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
+                                Clients = (from c in _server.Clients.Where(c => c.Key != ClientId) select new ClientItem(c.Key, c.Value.Nick, c.Value.IPAddress, c.Value.PublicKey, c.Value.Status)).ToList(),
+                                Client = new ClientItem(item.Value.ClientId, item.Value.Nick, item.Value.IPAddress, item.Value.PublicKey, item.Value.Status),
+                                ProcessClient = new ClientItem(ClientId, Nick, IPAddress, PublicKey, Status),
                                 ClientEvent = ClientEvent.Logout
                             }));
-                        server.ClientDisconnected?.Invoke(new ClientConnectionArguments(this));
+                        _server.ClientDisconnected?.Invoke(new ClientConnectionArguments(this));
                         break;
                     case Cmd.SetNick:
                         Nick = command.Content;
-                        foreach (var item in server.Clients)
+                        foreach (var item in _server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
+                                Clients = (from c in _server.Clients select new ClientItem(c.Key, c.Value.Nick, c.Value.IPAddress, c.Value.PublicKey, c.Value.Status)).ToList(),
+                                Client = new ClientItem(item.Value.ClientId, item.Value.Nick, item.Value.IPAddress, item.Value.PublicKey, item.Value.Status),
+                                ProcessClient = new ClientItem(ClientId, Nick, IPAddress, PublicKey, Status),
                                 ClientEvent = ClientEvent.Refresh
                             }));
                         break;
@@ -411,12 +409,12 @@ namespace Chat.Core.Server
                     case Cmd.SetStatus:
                         int statusCode = int.Parse(command.Content);
                         SetStatus((ClientStatus)statusCode);
-                        foreach (var item in server.Clients)
+                        foreach (var item in _server.Clients)
                             item.Value.SendCommand(Cmd.UserList, JsonConvert.SerializeObject(new ClientListResponse()
                             {
-                                Clients = (from c in server.Clients select new ClientItem { Nick = c.Value.Nick, ClientId = c.Key, IPAddress = c.Value.IPAddress, PublicKey = c.Value.PublicKey, Status = c.Value.Status }).ToList(),
-                                Client = new ClientItem { Nick = item.Value.Nick, ClientId = item.Value.ClientId, IPAddress = item.Value.IPAddress, PublicKey = item.Value.PublicKey, Status = item.Value.Status },
-                                ProcessClient = new ClientItem { Nick = Nick, ClientId = ClientId, IPAddress = IPAddress, PublicKey = PublicKey, Status = Status },
+                                Clients = (from c in _server.Clients select new ClientItem(c.Key, c.Value.Nick, c.Value.IPAddress, c.Value.PublicKey, c.Value.Status)).ToList(),
+                                Client = new ClientItem(item.Value.ClientId, item.Value.Nick, item.Value.IPAddress, item.Value.PublicKey, item.Value.Status),
+                                ProcessClient = new ClientItem(ClientId, Nick, IPAddress, PublicKey, Status),
                                 ClientEvent = ClientEvent.Refresh
                             }));
                         break;
@@ -425,14 +423,14 @@ namespace Chat.Core.Server
                 }
             }
 
-            private void connectionClosed_event()
+            private void ConnectionClosed_event()
             {
-                connectionClosed?.Invoke();
+                ConnectionClosed?.Invoke();
             }
 
-            internal void newMessageReceived_event(Message message)
+            internal void NewMessageReceived_event(Message message)
             {
-                newMessageReceived?.Invoke(new MessageReceivingArguments(message));
+                NewMessageReceived?.Invoke(new MessageReceivingArguments(message));
             }
 
             public void Block()

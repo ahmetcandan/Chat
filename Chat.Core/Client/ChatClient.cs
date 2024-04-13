@@ -117,7 +117,7 @@ namespace Chat.Core.Client
         public bool SendMessage(string message, long toClientId)
         {
             var toClient = clients.First(c => c.ClientId == toClientId);
-            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = toClientId, Content = message.Encrypt(toClient.PublicKey) })))
+            if (sendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message { From = ClientId, To = toClientId, EncryptContent = message.Encrypt(toClient.PublicKey) })))
             {
                 newMessageReceivedTrigger(new Message { Content = message, From = ClientId, To = toClientId });
                 return true;
@@ -183,7 +183,12 @@ namespace Chat.Core.Client
                 case Cmd.Message:
                     Message message = JsonConvert.DeserializeObject<Message>(command.Content);
                     if (message.To == ClientId)
-                        message.Content = message.Content.Decrypt(privateKey);
+                    {
+                        if (string.IsNullOrWhiteSpace(message.Content) && message.EncryptContent.Length > 0)
+                        {
+                            message.Content = message.EncryptContent.Decrypt(privateKey);
+                        }
+                    }
                     if (message.To == 0 || message.To == ClientId || message.From == ClientId)
                         newMessageReceivedTrigger(message);
                     break;
