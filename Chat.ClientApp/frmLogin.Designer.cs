@@ -1,6 +1,6 @@
 ﻿namespace Chat.ClientApp;
 
-partial class frmLogin
+partial class FrmLogin
 {
     /// <summary>
     /// Required designer variable.
@@ -28,150 +28,160 @@ partial class frmLogin
     /// </summary>
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmLogin));
-        this.grpConnection = new System.Windows.Forms.GroupBox();
-        this.label3 = new System.Windows.Forms.Label();
-        this.label2 = new System.Windows.Forms.Label();
-        this.label1 = new System.Windows.Forms.Label();
-        this.btnConnect = new System.Windows.Forms.Button();
-        this.txtIPAddress = new System.Windows.Forms.TextBox();
-        this.txtNick = new System.Windows.Forms.TextBox();
-        this.txtPortNo = new System.Windows.Forms.TextBox();
-        this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-        this.grpConnection.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
-        this.SuspendLayout();
+        components = new System.ComponentModel.Container();
+        GrpConnection = new GroupBox();
+        label3 = new Label();
+        label2 = new Label();
+        label1 = new Label();
+        BtnConnect = new Button();
+        TxtIPAddress = new TextBox();
+        TxtNick = new TextBox();
+        TxtPortNo = new TextBox();
+        ErrorProvider1 = new ErrorProvider(components);
+        GrpConnection.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)ErrorProvider1).BeginInit();
+        SuspendLayout();
         // 
-        // grpConnection
+        // GrpConnection
         // 
-        this.grpConnection.Controls.Add(this.label3);
-        this.grpConnection.Controls.Add(this.label2);
-        this.grpConnection.Controls.Add(this.label1);
-        this.grpConnection.Controls.Add(this.btnConnect);
-        this.grpConnection.Controls.Add(this.txtIPAddress);
-        this.grpConnection.Controls.Add(this.txtNick);
-        this.grpConnection.Controls.Add(this.txtPortNo);
-        this.grpConnection.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.grpConnection.Location = new System.Drawing.Point(12, 12);
-        this.grpConnection.Name = "grpConnection";
-        this.grpConnection.Size = new System.Drawing.Size(335, 189);
-        this.grpConnection.TabIndex = 10;
-        this.grpConnection.TabStop = false;
-        this.grpConnection.Text = "Connection";
+        GrpConnection.Controls.Add(label3);
+        GrpConnection.Controls.Add(label2);
+        GrpConnection.Controls.Add(label1);
+        GrpConnection.Controls.Add(BtnConnect);
+        GrpConnection.Controls.Add(TxtIPAddress);
+        GrpConnection.Controls.Add(TxtNick);
+        GrpConnection.Controls.Add(TxtPortNo);
+        GrpConnection.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        GrpConnection.Location = new Point(14, 14);
+        GrpConnection.Margin = new Padding(4, 3, 4, 3);
+        GrpConnection.Name = "GrpConnection";
+        GrpConnection.Padding = new Padding(4, 3, 4, 3);
+        GrpConnection.Size = new Size(391, 218);
+        GrpConnection.TabIndex = 10;
+        GrpConnection.TabStop = false;
+        GrpConnection.Text = "Connection";
         // 
         // label3
         // 
-        this.label3.BackColor = System.Drawing.Color.SkyBlue;
-        this.label3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        this.label3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.label3.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label3.Location = new System.Drawing.Point(11, 79);
-        this.label3.Name = "label3";
-        this.label3.Size = new System.Drawing.Size(141, 23);
-        this.label3.TabIndex = 7;
-        this.label3.Text = "Nick : ";
-        this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+        label3.BackColor = Color.SkyBlue;
+        label3.BorderStyle = BorderStyle.FixedSingle;
+        label3.FlatStyle = FlatStyle.Flat;
+        label3.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        label3.Location = new Point(13, 91);
+        label3.Margin = new Padding(4, 0, 4, 0);
+        label3.Name = "label3";
+        label3.Size = new Size(164, 26);
+        label3.TabIndex = 7;
+        label3.Text = "Nick : ";
+        label3.TextAlign = ContentAlignment.MiddleRight;
         // 
         // label2
         // 
-        this.label2.BackColor = System.Drawing.Color.SkyBlue;
-        this.label2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        this.label2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.label2.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label2.Location = new System.Drawing.Point(11, 50);
-        this.label2.Name = "label2";
-        this.label2.Size = new System.Drawing.Size(141, 23);
-        this.label2.TabIndex = 7;
-        this.label2.Text = "Port No : ";
-        this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+        label2.BackColor = Color.SkyBlue;
+        label2.BorderStyle = BorderStyle.FixedSingle;
+        label2.FlatStyle = FlatStyle.Flat;
+        label2.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        label2.Location = new Point(13, 58);
+        label2.Margin = new Padding(4, 0, 4, 0);
+        label2.Name = "label2";
+        label2.Size = new Size(164, 26);
+        label2.TabIndex = 7;
+        label2.Text = "Port No : ";
+        label2.TextAlign = ContentAlignment.MiddleRight;
         // 
         // label1
         // 
-        this.label1.BackColor = System.Drawing.Color.SkyBlue;
-        this.label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.label1.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label1.Location = new System.Drawing.Point(11, 21);
-        this.label1.Name = "label1";
-        this.label1.Size = new System.Drawing.Size(141, 23);
-        this.label1.TabIndex = 7;
-        this.label1.Text = "IP Address : ";
-        this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+        label1.BackColor = Color.SkyBlue;
+        label1.BorderStyle = BorderStyle.FixedSingle;
+        label1.FlatStyle = FlatStyle.Flat;
+        label1.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        label1.Location = new Point(13, 24);
+        label1.Margin = new Padding(4, 0, 4, 0);
+        label1.Name = "label1";
+        label1.Size = new Size(164, 26);
+        label1.TabIndex = 7;
+        label1.Text = "IP Address : ";
+        label1.TextAlign = ContentAlignment.MiddleRight;
         // 
-        // btnConnect
+        // BtnConnect
         // 
-        this.btnConnect.BackColor = System.Drawing.Color.LimeGreen;
-        this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.btnConnect.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.btnConnect.Location = new System.Drawing.Point(198, 134);
-        this.btnConnect.Name = "btnConnect";
-        this.btnConnect.Size = new System.Drawing.Size(121, 34);
-        this.btnConnect.TabIndex = 3;
-        this.btnConnect.Text = "Connect";
-        this.btnConnect.UseVisualStyleBackColor = false;
-        this.btnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
+        BtnConnect.BackColor = Color.LimeGreen;
+        BtnConnect.FlatStyle = FlatStyle.Flat;
+        BtnConnect.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        BtnConnect.Location = new Point(231, 155);
+        BtnConnect.Margin = new Padding(4, 3, 4, 3);
+        BtnConnect.Name = "BtnConnect";
+        BtnConnect.Size = new Size(141, 39);
+        BtnConnect.TabIndex = 3;
+        BtnConnect.Text = "Connect";
+        BtnConnect.UseVisualStyleBackColor = false;
+        BtnConnect.Click += BtnConnect_Click;
         // 
-        // txtIPAddress
+        // TxtIPAddress
         // 
-        this.txtIPAddress.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtIPAddress.Location = new System.Drawing.Point(158, 21);
-        this.txtIPAddress.Name = "txtIPAddress";
-        this.txtIPAddress.Size = new System.Drawing.Size(161, 23);
-        this.txtIPAddress.TabIndex = 0;
-        this.txtIPAddress.Text = "127.0.0.1";
+        TxtIPAddress.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtIPAddress.Location = new Point(184, 24);
+        TxtIPAddress.Margin = new Padding(4, 3, 4, 3);
+        TxtIPAddress.Name = "TxtIPAddress";
+        TxtIPAddress.Size = new Size(187, 23);
+        TxtIPAddress.TabIndex = 0;
+        TxtIPAddress.Text = "127.0.0.1";
+        TxtIPAddress.KeyPress += Txt_KeyPress;
         // 
-        // txtNick
+        // TxtNick
         // 
-        this.txtNick.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtNick.Location = new System.Drawing.Point(158, 79);
-        this.txtNick.Name = "txtNick";
-        this.txtNick.Size = new System.Drawing.Size(161, 23);
-        this.txtNick.TabIndex = 2;
-        this.txtNick.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+        TxtNick.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtNick.Location = new Point(184, 91);
+        TxtNick.Margin = new Padding(4, 3, 4, 3);
+        TxtNick.Name = "TxtNick";
+        TxtNick.Size = new Size(187, 23);
+        TxtNick.TabIndex = 2;
+        TxtNick.TextAlign = HorizontalAlignment.Right;
+        TxtNick.KeyPress += Txt_KeyPress;
         // 
-        // txtPortNo
+        // TxtPortNo
         // 
-        this.txtPortNo.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtPortNo.Location = new System.Drawing.Point(158, 50);
-        this.txtPortNo.Name = "txtPortNo";
-        this.txtPortNo.Size = new System.Drawing.Size(161, 23);
-        this.txtPortNo.TabIndex = 1;
-        this.txtPortNo.Text = "42001";
-        this.txtPortNo.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+        TxtPortNo.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtPortNo.Location = new Point(184, 58);
+        TxtPortNo.Margin = new Padding(4, 3, 4, 3);
+        TxtPortNo.Name = "TxtPortNo";
+        TxtPortNo.Size = new Size(187, 23);
+        TxtPortNo.TabIndex = 1;
+        TxtPortNo.Text = "42001";
+        TxtPortNo.TextAlign = HorizontalAlignment.Right;
+        TxtPortNo.KeyPress += Txt_KeyPress;
         // 
-        // errorProvider1
+        // ErrorProvider1
         // 
-        this.errorProvider1.ContainerControl = this;
+        ErrorProvider1.ContainerControl = this;
         // 
-        // frmLogin
+        // FrmLogin
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.BackColor = System.Drawing.Color.Azure;
-        this.ClientSize = new System.Drawing.Size(360, 213);
-        this.Controls.Add(this.grpConnection);
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-        this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-        this.Name = "frmLogin";
-        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Login";
-        this.grpConnection.ResumeLayout(false);
-        this.grpConnection.PerformLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
-        this.ResumeLayout(false);
-
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
+        BackColor = Color.Azure;
+        ClientSize = new Size(420, 246);
+        Controls.Add(GrpConnection);
+        FormBorderStyle = FormBorderStyle.FixedToolWindow;
+        Margin = new Padding(4, 3, 4, 3);
+        Name = "FrmLogin";
+        StartPosition = FormStartPosition.CenterScreen;
+        Text = "Login";
+        GrpConnection.ResumeLayout(false);
+        GrpConnection.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)ErrorProvider1).EndInit();
+        ResumeLayout(false);
     }
 
     #endregion
 
-    private System.Windows.Forms.GroupBox grpConnection;
+    private System.Windows.Forms.GroupBox GrpConnection;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label1;
-    private System.Windows.Forms.Button btnConnect;
-    private System.Windows.Forms.TextBox txtIPAddress;
-    private System.Windows.Forms.TextBox txtPortNo;
+    private System.Windows.Forms.Button BtnConnect;
+    private System.Windows.Forms.TextBox TxtIPAddress;
+    private System.Windows.Forms.TextBox TxtPortNo;
     private System.Windows.Forms.Label label3;
-    private System.Windows.Forms.TextBox txtNick;
-    private System.Windows.Forms.ErrorProvider errorProvider1;
+    private System.Windows.Forms.TextBox TxtNick;
+    private System.Windows.Forms.ErrorProvider ErrorProvider1;
 }

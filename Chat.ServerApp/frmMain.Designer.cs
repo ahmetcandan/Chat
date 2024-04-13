@@ -30,77 +30,77 @@ partial class FrmMain
     {
         components = new System.ComponentModel.Container();
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
-        btnStart = new Button();
-        txtPortNo = new TextBox();
-        txtMessages = new TextBox();
+        BtnStart = new Button();
+        TxtPortNo = new TextBox();
+        TxtMessages = new TextBox();
         grpConnection = new GroupBox();
         label1 = new Label();
         grpMessages = new GroupBox();
         frpUsers = new GroupBox();
-        lvClients = new ListView();
+        LvClients = new ListView();
         clientId = new ColumnHeader();
         nickName = new ColumnHeader();
         ipAddress = new ColumnHeader();
-        menuClients = new ContextMenuStrip(components);
+        MenuClients = new ContextMenuStrip(components);
         banToolStripMenuItem = new ToolStripMenuItem();
-        notifyIcon1 = new NotifyIcon(components);
-        notifyMenu = new ContextMenuStrip(components);
+        NotifyIcon1 = new NotifyIcon(components);
+        NotifyMenu = new ContextMenuStrip(components);
         openToolStripMenuItem = new ToolStripMenuItem();
         toolStripSeparator1 = new ToolStripSeparator();
         exitToolStripMenuItem = new ToolStripMenuItem();
-        errorProvider1 = new ErrorProvider(components);
+        ErrorProvider1 = new ErrorProvider(components);
         grpConnection.SuspendLayout();
         grpMessages.SuspendLayout();
         frpUsers.SuspendLayout();
-        menuClients.SuspendLayout();
-        notifyMenu.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
+        MenuClients.SuspendLayout();
+        NotifyMenu.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)ErrorProvider1).BeginInit();
         SuspendLayout();
         // 
-        // btnStart
+        // BtnStart
         // 
-        btnStart.BackColor = Color.LimeGreen;
-        btnStart.FlatStyle = FlatStyle.Flat;
-        btnStart.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        btnStart.Location = new Point(287, 24);
-        btnStart.Margin = new Padding(4, 3, 4, 3);
-        btnStart.Name = "btnStart";
-        btnStart.Size = new Size(99, 27);
-        btnStart.TabIndex = 0;
-        btnStart.Text = "Start";
-        btnStart.UseVisualStyleBackColor = false;
-        btnStart.Click += BtnStart_Click;
+        BtnStart.BackColor = Color.LimeGreen;
+        BtnStart.FlatStyle = FlatStyle.Flat;
+        BtnStart.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        BtnStart.Location = new Point(287, 24);
+        BtnStart.Margin = new Padding(4, 3, 4, 3);
+        BtnStart.Name = "BtnStart";
+        BtnStart.Size = new Size(99, 27);
+        BtnStart.TabIndex = 0;
+        BtnStart.Text = "Start";
+        BtnStart.UseVisualStyleBackColor = false;
+        BtnStart.Click += BtnStart_Click;
         // 
-        // txtPortNo
+        // TxtPortNo
         // 
-        txtPortNo.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        txtPortNo.Location = new Point(163, 24);
-        txtPortNo.Margin = new Padding(4, 3, 4, 3);
-        txtPortNo.Name = "txtPortNo";
-        txtPortNo.Size = new Size(116, 23);
-        txtPortNo.TabIndex = 6;
-        txtPortNo.Text = "42001";
-        txtPortNo.TextAlign = HorizontalAlignment.Right;
+        TxtPortNo.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtPortNo.Location = new Point(163, 24);
+        TxtPortNo.Margin = new Padding(4, 3, 4, 3);
+        TxtPortNo.Name = "TxtPortNo";
+        TxtPortNo.Size = new Size(116, 23);
+        TxtPortNo.TabIndex = 6;
+        TxtPortNo.Text = "42001";
+        TxtPortNo.TextAlign = HorizontalAlignment.Right;
         // 
-        // txtMessages
+        // TxtMessages
         // 
-        txtMessages.AcceptsReturn = true;
-        txtMessages.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        txtMessages.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        txtMessages.Location = new Point(13, 28);
-        txtMessages.Margin = new Padding(4, 3, 4, 3);
-        txtMessages.Multiline = true;
-        txtMessages.Name = "txtMessages";
-        txtMessages.ReadOnly = true;
-        txtMessages.ScrollBars = ScrollBars.Vertical;
-        txtMessages.Size = new Size(764, 434);
-        txtMessages.TabIndex = 7;
+        TxtMessages.AcceptsReturn = true;
+        TxtMessages.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        TxtMessages.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtMessages.Location = new Point(13, 28);
+        TxtMessages.Margin = new Padding(4, 3, 4, 3);
+        TxtMessages.Multiline = true;
+        TxtMessages.Name = "TxtMessages";
+        TxtMessages.ReadOnly = true;
+        TxtMessages.ScrollBars = ScrollBars.Vertical;
+        TxtMessages.Size = new Size(764, 434);
+        TxtMessages.TabIndex = 7;
         // 
         // grpConnection
         // 
         grpConnection.Controls.Add(label1);
-        grpConnection.Controls.Add(btnStart);
-        grpConnection.Controls.Add(txtPortNo);
+        grpConnection.Controls.Add(BtnStart);
+        grpConnection.Controls.Add(TxtPortNo);
         grpConnection.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
         grpConnection.Location = new Point(14, 14);
         grpConnection.Margin = new Padding(4, 3, 4, 3);
@@ -128,7 +128,7 @@ partial class FrmMain
         // grpMessages
         // 
         grpMessages.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        grpMessages.Controls.Add(txtMessages);
+        grpMessages.Controls.Add(TxtMessages);
         grpMessages.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
         grpMessages.Location = new Point(424, 14);
         grpMessages.Margin = new Padding(4, 3, 4, 3);
@@ -142,7 +142,7 @@ partial class FrmMain
         // frpUsers
         // 
         frpUsers.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-        frpUsers.Controls.Add(lvClients);
+        frpUsers.Controls.Add(LvClients);
         frpUsers.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
         frpUsers.Location = new Point(14, 91);
         frpUsers.Margin = new Padding(4, 3, 4, 3);
@@ -153,21 +153,21 @@ partial class FrmMain
         frpUsers.TabStop = false;
         frpUsers.Text = "Clients";
         // 
-        // lvClients
+        // LvClients
         // 
-        lvClients.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        lvClients.Columns.AddRange(new ColumnHeader[] { clientId, nickName, ipAddress });
-        lvClients.ContextMenuStrip = menuClients;
-        lvClients.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        lvClients.FullRowSelect = true;
-        lvClients.GridLines = true;
-        lvClients.Location = new Point(13, 28);
-        lvClients.Margin = new Padding(4, 3, 4, 3);
-        lvClients.Name = "lvClients";
-        lvClients.Size = new Size(373, 357);
-        lvClients.TabIndex = 9;
-        lvClients.UseCompatibleStateImageBehavior = false;
-        lvClients.View = View.Details;
+        LvClients.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        LvClients.Columns.AddRange(new ColumnHeader[] { clientId, nickName, ipAddress });
+        LvClients.ContextMenuStrip = MenuClients;
+        LvClients.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        LvClients.FullRowSelect = true;
+        LvClients.GridLines = true;
+        LvClients.Location = new Point(13, 28);
+        LvClients.Margin = new Padding(4, 3, 4, 3);
+        LvClients.Name = "LvClients";
+        LvClients.Size = new Size(373, 357);
+        LvClients.TabIndex = 9;
+        LvClients.UseCompatibleStateImageBehavior = false;
+        LvClients.View = View.Details;
         // 
         // clientId
         // 
@@ -188,34 +188,34 @@ partial class FrmMain
         ipAddress.Text = "IP";
         ipAddress.Width = 168;
         // 
-        // menuClients
+        // MenuClients
         // 
-        menuClients.Items.AddRange(new ToolStripItem[] { banToolStripMenuItem });
-        menuClients.Name = "menuClients";
-        menuClients.Size = new Size(99, 26);
-        menuClients.Opening += MenuClients_Opening;
+        MenuClients.Items.AddRange(new ToolStripItem[] { banToolStripMenuItem });
+        MenuClients.Name = "menuClients";
+        MenuClients.Size = new Size(99, 26);
+        MenuClients.Opening += MenuClients_Opening;
         // 
         // banToolStripMenuItem
         // 
         banToolStripMenuItem.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
         banToolStripMenuItem.Name = "banToolStripMenuItem";
-        banToolStripMenuItem.Size = new Size(98, 22);
+        banToolStripMenuItem.Size = new Size(180, 22);
         banToolStripMenuItem.Text = "Ban";
         banToolStripMenuItem.Click += BanToolStripMenuItem_Click;
         // 
-        // notifyIcon1
+        // NotifyIcon1
         // 
-        notifyIcon1.ContextMenuStrip = notifyMenu;
-        notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
-        notifyIcon1.Text = "Chat | Server";
-        notifyIcon1.Visible = true;
-        notifyIcon1.DoubleClick += NotifyIcon1_DoubleClick;
+        NotifyIcon1.ContextMenuStrip = NotifyMenu;
+        NotifyIcon1.Icon = (Icon)resources.GetObject("NotifyIcon1.Icon");
+        NotifyIcon1.Text = "Chat | Server";
+        NotifyIcon1.Visible = true;
+        NotifyIcon1.DoubleClick += NotifyIcon1_DoubleClick;
         // 
-        // notifyMenu
+        // NotifyMenu
         // 
-        notifyMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
-        notifyMenu.Name = "notifyMenu";
-        notifyMenu.Size = new Size(105, 54);
+        NotifyMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
+        NotifyMenu.Name = "notifyMenu";
+        NotifyMenu.Size = new Size(105, 54);
         // 
         // openToolStripMenuItem
         // 
@@ -235,13 +235,13 @@ partial class FrmMain
         exitToolStripMenuItem.Name = "exitToolStripMenuItem";
         exitToolStripMenuItem.Size = new Size(104, 22);
         exitToolStripMenuItem.Text = "Exit";
-        exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+        exitToolStripMenuItem.Click += ExitToolStripMenuItem_Click;
         // 
-        // errorProvider1
+        // ErrorProvider1
         // 
-        errorProvider1.ContainerControl = this;
+        ErrorProvider1.ContainerControl = this;
         // 
-        // frmMain
+        // FrmMain
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
@@ -253,7 +253,7 @@ partial class FrmMain
         Icon = (Icon)resources.GetObject("$this.Icon");
         Margin = new Padding(4, 3, 4, 3);
         MinimumSize = new Size(709, 288);
-        Name = "frmMain";
+        Name = "FrmMain";
         Text = "Server | Chat";
         FormClosing += FrmMain_FormClosing;
         Load += FrmMain_Load;
@@ -262,30 +262,30 @@ partial class FrmMain
         grpMessages.ResumeLayout(false);
         grpMessages.PerformLayout();
         frpUsers.ResumeLayout(false);
-        menuClients.ResumeLayout(false);
-        notifyMenu.ResumeLayout(false);
-        ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
+        MenuClients.ResumeLayout(false);
+        NotifyMenu.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)ErrorProvider1).EndInit();
         ResumeLayout(false);
     }
 
     #endregion
 
-    private System.Windows.Forms.Button btnStart;
-    private System.Windows.Forms.TextBox txtPortNo;
-    private System.Windows.Forms.TextBox txtMessages;
+    private System.Windows.Forms.Button BtnStart;
+    private System.Windows.Forms.TextBox TxtPortNo;
+    private System.Windows.Forms.TextBox TxtMessages;
     private System.Windows.Forms.GroupBox grpConnection;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.GroupBox grpMessages;
     private System.Windows.Forms.GroupBox frpUsers;
-    private System.Windows.Forms.ListView lvClients;
+    private System.Windows.Forms.ListView LvClients;
     private System.Windows.Forms.ColumnHeader nickName;
     private System.Windows.Forms.ColumnHeader ipAddress;
-    private System.Windows.Forms.NotifyIcon notifyIcon1;
-    private System.Windows.Forms.ContextMenuStrip notifyMenu;
+    private System.Windows.Forms.NotifyIcon NotifyIcon1;
+    private System.Windows.Forms.ContextMenuStrip NotifyMenu;
     private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-    private System.Windows.Forms.ErrorProvider errorProvider1;
+    private System.Windows.Forms.ErrorProvider ErrorProvider1;
     private System.Windows.Forms.ColumnHeader clientId;
-    private System.Windows.Forms.ContextMenuStrip menuClients;
+    private System.Windows.Forms.ContextMenuStrip MenuClients;
     private System.Windows.Forms.ToolStripMenuItem banToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

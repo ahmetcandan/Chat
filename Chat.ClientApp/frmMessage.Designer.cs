@@ -1,6 +1,6 @@
 ﻿namespace Chat.ClientApp;
 
-partial class frmMessage
+partial class FrmMessage
 {
     /// <summary>
     /// Required designer variable.
@@ -28,74 +28,74 @@ partial class frmMessage
     /// </summary>
     private void InitializeComponent()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMessage));
-        this.txtMessage = new System.Windows.Forms.TextBox();
-        this.btnSendMessage = new System.Windows.Forms.Button();
-        this.txtMessages = new System.Windows.Forms.TextBox();
-        this.SuspendLayout();
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMessage));
+        TxtMessage = new TextBox();
+        BtnSendMessage = new Button();
+        TxtMessages = new TextBox();
+        SuspendLayout();
         // 
-        // txtMessage
+        // TxtMessage
         // 
-        this.txtMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.txtMessage.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtMessage.Location = new System.Drawing.Point(12, 438);
-        this.txtMessage.Name = "txtMessage";
-        this.txtMessage.Size = new System.Drawing.Size(523, 23);
-        this.txtMessage.TabIndex = 10;
-        this.txtMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtMessage_KeyPress);
+        TxtMessage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        TxtMessage.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtMessage.Location = new Point(14, 505);
+        TxtMessage.Margin = new Padding(4, 3, 4, 3);
+        TxtMessage.Name = "TxtMessage";
+        TxtMessage.Size = new Size(610, 23);
+        TxtMessage.TabIndex = 10;
+        TxtMessage.KeyPress += TxtMessage_KeyPress;
         // 
-        // btnSendMessage
+        // BtnSendMessage
         // 
-        this.btnSendMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-        this.btnSendMessage.BackColor = System.Drawing.Color.LimeGreen;
-        this.btnSendMessage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.btnSendMessage.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.btnSendMessage.Location = new System.Drawing.Point(535, 438);
-        this.btnSendMessage.Name = "btnSendMessage";
-        this.btnSendMessage.Size = new System.Drawing.Size(63, 23);
-        this.btnSendMessage.TabIndex = 9;
-        this.btnSendMessage.Text = "Send";
-        this.btnSendMessage.UseVisualStyleBackColor = false;
-        this.btnSendMessage.Click += new System.EventHandler(this.BtnSendMessage_Click);
+        BtnSendMessage.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        BtnSendMessage.BackColor = Color.LimeGreen;
+        BtnSendMessage.FlatStyle = FlatStyle.Flat;
+        BtnSendMessage.Font = new Font("Lucida Console", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        BtnSendMessage.Location = new Point(624, 505);
+        BtnSendMessage.Margin = new Padding(4, 3, 4, 3);
+        BtnSendMessage.Name = "BtnSendMessage";
+        BtnSendMessage.Size = new Size(74, 27);
+        BtnSendMessage.TabIndex = 9;
+        BtnSendMessage.Text = "Send";
+        BtnSendMessage.UseVisualStyleBackColor = false;
+        BtnSendMessage.Click += BtnSendMessage_Click;
         // 
-        // txtMessages
+        // TxtMessages
         // 
-        this.txtMessages.AcceptsReturn = true;
-        this.txtMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-        | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.txtMessages.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtMessages.Location = new System.Drawing.Point(12, 12);
-        this.txtMessages.Multiline = true;
-        this.txtMessages.Name = "txtMessages";
-        this.txtMessages.ReadOnly = true;
-        this.txtMessages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-        this.txtMessages.Size = new System.Drawing.Size(586, 420);
-        this.txtMessages.TabIndex = 8;
-        this.txtMessages.TextChanged += new System.EventHandler(this.TxtMessages_TextChanged);
+        TxtMessages.AcceptsReturn = true;
+        TxtMessages.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        TxtMessages.Font = new Font("Lucida Console", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        TxtMessages.Location = new Point(14, 14);
+        TxtMessages.Margin = new Padding(4, 3, 4, 3);
+        TxtMessages.Multiline = true;
+        TxtMessages.Name = "TxtMessages";
+        TxtMessages.ReadOnly = true;
+        TxtMessages.ScrollBars = ScrollBars.Vertical;
+        TxtMessages.Size = new Size(683, 484);
+        TxtMessages.TabIndex = 8;
+        TxtMessages.TextChanged += TxtMessages_TextChanged;
         // 
-        // frmMessage
+        // FrmMessage
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(610, 473);
-        this.Controls.Add(this.txtMessage);
-        this.Controls.Add(this.btnSendMessage);
-        this.Controls.Add(this.txtMessages);
-        this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-        this.MinimumSize = new System.Drawing.Size(380, 328);
-        this.Name = "frmMessage";
-        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "frmMessage";
-        this.ResumeLayout(false);
-        this.PerformLayout();
-
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
+        ClientSize = new Size(712, 546);
+        Controls.Add(TxtMessage);
+        Controls.Add(BtnSendMessage);
+        Controls.Add(TxtMessages);
+        Icon = (Icon)resources.GetObject("$this.Icon");
+        Margin = new Padding(4, 3, 4, 3);
+        MinimumSize = new Size(441, 372);
+        Name = "FrmMessage";
+        StartPosition = FormStartPosition.CenterScreen;
+        Text = "FrmMessage";
+        ResumeLayout(false);
+        PerformLayout();
     }
 
     #endregion
 
-    private System.Windows.Forms.TextBox txtMessage;
-    private System.Windows.Forms.Button btnSendMessage;
-    private System.Windows.Forms.TextBox txtMessages;
+    private System.Windows.Forms.TextBox TxtMessage;
+    private System.Windows.Forms.Button BtnSendMessage;
+    private System.Windows.Forms.TextBox TxtMessages;
 }

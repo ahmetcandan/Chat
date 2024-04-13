@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>server.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="server.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Chat.Server\Chat.Server.csproj" />

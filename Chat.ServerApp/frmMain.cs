@@ -51,7 +51,7 @@ public partial class FrmMain : Form
 
     private void RefreshClientList()
     {
-        lvClients.Items.Clear();
+        LvClients.Items.Clear();
         foreach (var client in Session.Clients)
         {
             ListViewItem item = new()
@@ -60,7 +60,7 @@ public partial class FrmMain : Form
             };
             item.SubItems.Add(client.Nick);
             item.SubItems.Add(client.IPAddress);
-            lvClients.Items.Add(item);
+            LvClients.Items.Add(item);
         }
     }
 
@@ -72,9 +72,9 @@ public partial class FrmMain : Form
 
     private void SetMessage(string message)
     {
-        txtMessages.Text += $@"{message}{Environment.NewLine}";
-        txtMessages.SelectionStart = txtMessages.Text.Length;
-        txtMessages.ScrollToCaret();
+        TxtMessages.Text += $@"{message}{Environment.NewLine}";
+        TxtMessages.SelectionStart = TxtMessages.Text.Length;
+        TxtMessages.ScrollToCaret();
     }
 
     private void BtnStart_Click(object sender, EventArgs e)
@@ -84,19 +84,19 @@ public partial class FrmMain : Form
             if (!_start)
             {
                 int portNo = 0;
-                if (string.IsNullOrEmpty(txtPortNo.Text))
+                if (string.IsNullOrEmpty(TxtPortNo.Text))
                 {
-                    errorProvider1.SetError(txtPortNo, "Cannot be empty");
+                    ErrorProvider1.SetError(TxtPortNo, "Cannot be empty");
                     return;
                 }
-                else if (!int.TryParse(txtPortNo.Text, out portNo))
+                else if (!int.TryParse(TxtPortNo.Text, out portNo))
                 {
-                    errorProvider1.SetError(txtPortNo, "Not valid Port No");
+                    ErrorProvider1.SetError(TxtPortNo, "Not valid Port No");
                     return;
                 }
                 else if (portNo < 100 && portNo > 65535)
                 {
-                    errorProvider1.SetError(txtPortNo, "Not valid Port No");
+                    ErrorProvider1.SetError(TxtPortNo, "Not valid Port No");
                     return;
                 }
 
@@ -109,26 +109,26 @@ public partial class FrmMain : Form
                 string hostName = Dns.GetHostName();
                 var addressList = Dns.GetHostByName(hostName).AddressList;
                 SetMessage($"Server started => IP: {(addressList.Length > 0 ? addressList[0].ToString() : hostName)} Port: {portNo}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
-                btnStart.Text = "Stop";
-                btnStart.BackColor = Color.Crimson;
+                BtnStart.Text = "Stop";
+                BtnStart.BackColor = Color.Crimson;
                 BackColor = Color.GhostWhite;
-                notifyIcon1.Text = $"Chat | Server [{(addressList.Length > 0 ? addressList[0].ToString() : hostName)}:{portNo}]";
+                NotifyIcon1.Text = $"Chat | Server [{(addressList.Length > 0 ? addressList[0].ToString() : hostName)}:{portNo}]";
             }
             else
             {
                 _server.Stop();
                 string hostName = Dns.GetHostName();
                 var addressList = Dns.GetHostByName(hostName).AddressList;
-                SetMessage($"Server stopped => IP: {(addressList.Length > 0 ? addressList[0].ToString() : "hostName")} Port: {txtPortNo.Text}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
-                btnStart.Text = "Start";
-                btnStart.BackColor = Color.LimeGreen;
+                SetMessage($"Server stopped => IP: {(addressList.Length > 0 ? addressList[0].ToString() : "hostName")} Port: {TxtPortNo.Text}, Date: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}");
+                BtnStart.Text = "Start";
+                BtnStart.BackColor = Color.LimeGreen;
                 BackColor = Color.AliceBlue;
-                lvClients.Items.Clear();
-                notifyIcon1.Text = $"Chat | Server";
+                LvClients.Items.Clear();
+                NotifyIcon1.Text = $"Chat | Server";
             }
 
             _start = !_start;
-            txtPortNo.ReadOnly = _start;
+            TxtPortNo.ReadOnly = _start;
         }
         catch (Exception ex)
         {
@@ -149,7 +149,7 @@ public partial class FrmMain : Form
             _server.Stop();
     }
 
-    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
     {
         _close = true;
         Application.Exit();
@@ -157,17 +157,17 @@ public partial class FrmMain : Form
 
     private void MenuClients_Opening(object sender, CancelEventArgs e)
     {
-        banToolStripMenuItem.Enabled = lvClients.SelectedItems.Count == 1;
-        if (lvClients.SelectedItems.Count == 1)
+        banToolStripMenuItem.Enabled = LvClients.SelectedItems.Count == 1;
+        if (LvClients.SelectedItems.Count == 1)
         {
-            long clientId = long.Parse(lvClients.SelectedItems[0].Text);
+            long clientId = long.Parse(LvClients.SelectedItems[0].Text);
             banToolStripMenuItem.Text = _server.ClientBlockStatus(clientId) ? "Unblock" : "Block";
         }
     }
 
     private void BanToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        long clientId = long.Parse(lvClients.SelectedItems[0].Text);
+        long clientId = long.Parse(LvClients.SelectedItems[0].Text);
         _server.BlockClient(clientId);
     }
 

@@ -3,9 +3,9 @@ using System.Net;
 
 namespace Chat.ClientApp;
 
-public partial class frmLogin : Form
+public partial class FrmLogin : Form
 {
-    public frmLogin()
+    public FrmLogin()
     {
         InitializeComponent();
     }
@@ -15,29 +15,29 @@ public partial class frmLogin : Form
     private bool Validation()
     {
         bool result = true;
-        if (string.IsNullOrEmpty(txtIPAddress.Text))
+        if (string.IsNullOrEmpty(TxtIPAddress.Text))
         {
-            errorProvider1.SetError(txtIPAddress, "Cannot be empty");
+            ErrorProvider1.SetError(TxtIPAddress, "Cannot be empty");
             result = false;
         }
-        if (string.IsNullOrEmpty(txtNick.Text))
+        if (string.IsNullOrEmpty(TxtNick.Text))
         {
-            errorProvider1.SetError(txtNick, "Cannot be empty");
+            ErrorProvider1.SetError(TxtNick, "Cannot be empty");
             result = false;
         }
-        if (string.IsNullOrEmpty(txtPortNo.Text))
+        if (string.IsNullOrEmpty(TxtPortNo.Text))
         {
-            errorProvider1.SetError(txtPortNo, "Cannot be empty");
+            ErrorProvider1.SetError(TxtPortNo, "Cannot be empty");
             result = false;
         }
-        else if (!int.TryParse(txtPortNo.Text, out _portNo))
+        else if (!int.TryParse(TxtPortNo.Text, out _portNo))
         {
-            errorProvider1.SetError(txtPortNo, "Not valid Port No");
+            ErrorProvider1.SetError(TxtPortNo, "Not valid Port No");
             result = false;
         }
         else if (_portNo < 100 && _portNo > 65536)
         {
-            errorProvider1.SetError(txtPortNo, "Not valid Port No");
+            ErrorProvider1.SetError(TxtPortNo, "Not valid Port No");
             result = false;
         }
         return result;
@@ -45,13 +45,18 @@ public partial class frmLogin : Form
 
     private void BtnConnect_Click(object sender, EventArgs e)
     {
+        Connect();
+    }
+
+    private void Connect()
+    {
         if (Validation())
         {
             try
             {
                 string hostName = Dns.GetHostName();
                 var addressList = Dns.GetHostByName(hostName).AddressList;
-                Session.Client = new ChatClient(txtIPAddress.Text, _portNo, txtNick.Text, addressList.Length > 0 ? addressList[0].ToString() : hostName);
+                Session.Client = new ChatClient(TxtIPAddress.Text, _portNo, TxtNick.Text, addressList.Length > 0 ? addressList[0].ToString() : hostName);
                 if (Session.Client.Connect())
                 {
                     Session.HasConnection = true;
@@ -68,5 +73,11 @@ public partial class frmLogin : Form
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+    }
+
+    private void Txt_KeyPress(object sender, KeyPressEventArgs e)
+    {
+        if (e.KeyChar == 13)
+            Connect();
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Chat.ClientApp;
 
-public partial class frmMessage : Form
+public partial class FrmMessage : Form
 {
     private readonly ClientItem _toClient;
-    public frmMessage(ClientItem toClient)
+    public FrmMessage(ClientItem toClient)
     {
         InitializeComponent();
         _toClient = toClient;
@@ -20,8 +20,8 @@ public partial class frmMessage : Form
 
     private void SendMessage()
     {
-        if (!string.IsNullOrEmpty(txtMessage.Text) && Session.Client.SendMessage(txtMessage.Text, _toClient.ClientId))
-            txtMessage.Clear();
+        if (!string.IsNullOrEmpty(TxtMessage.Text) && Session.Client.SendMessage(TxtMessage.Text, _toClient.ClientId))
+            TxtMessage.Clear();
     }
 
     private void BtnSendMessage_Click(object sender, EventArgs e)
@@ -32,12 +32,12 @@ public partial class frmMessage : Form
     public void ReceivedMessage(Abstraction.Model.Message message, DateTime date)
     {
         var fromClient = Session.Clients.First(c => c.ClientId == message.From);
-        txtMessages.Text += $@"{fromClient.Nick}: {message.Content} [{date.ToShortTimeString()}]{Environment.NewLine}";
+        TxtMessages.Text += $@"{fromClient.Nick}: {message.Content} [{date.ToShortTimeString()}]{Environment.NewLine}";
     }
 
     private void TxtMessages_TextChanged(object sender, EventArgs e)
     {
-        txtMessages.SelectionStart = txtMessages.Text.Length;
-        txtMessages.ScrollToCaret();
+        TxtMessages.SelectionStart = TxtMessages.Text.Length;
+        TxtMessages.ScrollToCaret();
     }
 }

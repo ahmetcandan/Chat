@@ -6,6 +6,6 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
-        Application.Run(new frmMain());
+        Application.Run(new FrmMain());
     }
 }

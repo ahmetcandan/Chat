@@ -5,17 +5,17 @@ using Chat.Abstraction.Model;
 
 namespace Chat.ClientApp;
 
-public partial class frmMain : Form
+public partial class FrmMain : Form
 {
-    private readonly Dictionary<long, frmMessage> _privateMessageFormList = [];
-    public frmMain()
+    private readonly Dictionary<long, FrmMessage> _privateMessageFormList = [];
+    public FrmMain()
     {
         InitializeComponent();
     }
 
     private void FrmMain_Load(object sender, EventArgs e)
     {
-        frmLogin frmLogin = new();
+        FrmLogin frmLogin = new();
         frmLogin.ShowDialog();
         if (Session.Client == null)
         {
@@ -28,6 +28,7 @@ public partial class frmMain : Form
         Session.Client.NewMessgeReceived += new dgNewMessageReceived(NewMessageReceived);
         Session.Client.ClientListRefresh += new dgClientListRefresh(ClientListRefresh);
         Session.Client.ServerStopped += new dgServerStopped(() => Invoke(new dgServerStopped(ServerStopped)));
+        TxtMessage.Focus();
     }
 
     private void NewMessageReceived(MessageReceivingArguments e)
@@ -43,18 +44,18 @@ public partial class frmMain : Form
     private void ServerStopped()
     {
         openToolStripMenuItem.Image = Properties.Resources.gray;
-        txtMessage.Clear();
-        txtMessage.ReadOnly = true;
-        lvClients.Items.Clear();
-        btnSendMessage.Enabled = false;
+        TxtMessage.Clear();
+        TxtMessage.ReadOnly = true;
+        LvClients.Items.Clear();
+        BtnSendMessage.Enabled = false;
     }
 
     private void RefreshClientList(ClientListResponse response)
     {
         Session.Clients = response.Clients;
-        lvClients.Items.Clear();
+        LvClients.Items.Clear();
         Text = $"Client | Chat [{response.Client.Nick} -  {response.Client.Status.ClientStatusToString()}]";
-        notifyIcon1.Text = Text;
+        NotifyIcon1.Text = Text;
         ImageList imageList = new()
         {
             ImageSize = new Size(18, 18)
@@ -64,7 +65,7 @@ public partial class frmMain : Form
         imageList.Images.Add(((int)ClientStatus.Busy).ToString(), Properties.Resources.red);
         imageList.Images.Add(((int)ClientStatus.DoNotDisturb).ToString(), Properties.Resources.dnd);
         imageList.Images.Add(((int)ClientStatus.Invisible).ToString(), Properties.Resources.gray);
-        lvClients.SmallImageList = imageList;
+        LvClients.SmallImageList = imageList;
         foreach (var client in response.Clients.Where(c => c.ClientId != Session.Client.ClientId))
         {
             ListViewItem item = new()
@@ -73,7 +74,7 @@ public partial class frmMain : Form
                 ImageIndex = imageList.Images.IndexOfKey(((int)client.Status).ToString())
             };
             item.SubItems.Add(client.ClientId.ToString());
-            lvClients.Items.Add(item);
+            LvClients.Items.Add(item);
         }
     }
 
@@ -84,7 +85,7 @@ public partial class frmMain : Form
             if (Session.Client.Status != ClientStatus.DoNotDisturb)
                 TopMost = true;
             var fromClient = Session.Clients.First(c => c.ClientId == e.Message.From);
-            txtMessages.Text += $@"{fromClient.Nick}: {e.Message.Content} [{e.Date.ToShortTimeString()}]{Environment.NewLine}";
+            TxtMessages.Text += $@"{fromClient.Nick}: {e.Message.Content} [{e.Date.ToShortTimeString()}]{Environment.NewLine}";
             if (Session.Client.Status != ClientStatus.DoNotDisturb)
                 TopMost = false;
         }
@@ -95,8 +96,8 @@ public partial class frmMain : Form
             var form = OpenPriveteMessage(clientId);
             form.ReceivedMessage(e.Message, e.Date);
         }
-        txtMessages.SelectionStart = txtMessages.Text.Length;
-        txtMessages.ScrollToCaret();
+        TxtMessages.SelectionStart = TxtMessages.Text.Length;
+        TxtMessages.ScrollToCaret();
     }
 
     private void BtnSendMessage_Click(object sender, EventArgs e)
@@ -125,25 +126,25 @@ public partial class frmMain : Form
 
     private void SendMessage()
     {
-        if (!string.IsNullOrEmpty(txtMessage.Text) && Session.Client.SendMessage(txtMessage.Text))
-            txtMessage.Clear();
+        if (!string.IsNullOrEmpty(TxtMessage.Text) && Session.Client.SendMessage(TxtMessage.Text))
+            TxtMessage.Clear();
     }
 
     private void LvClients_DoubleClick(object sender, EventArgs e)
     {
-        if (lvClients.SelectedItems.Count == 1)
+        if (LvClients.SelectedItems.Count == 1)
         {
-            long clientId = long.Parse(lvClients.SelectedItems[0].SubItems[1].Text);
+            long clientId = long.Parse(LvClients.SelectedItems[0].SubItems[1].Text);
             if (clientId == Session.Client.ClientId)
                 return;
             OpenPriveteMessage(clientId);
         }
     }
 
-    private frmMessage OpenPriveteMessage(long clientId)
+    private FrmMessage OpenPriveteMessage(long clientId)
     {
         var toClient = Session.Clients.First(c => c.ClientId == clientId);
-        if (_privateMessageFormList.TryGetValue(clientId, out frmMessage? value))
+        if (_privateMessageFormList.TryGetValue(clientId, out FrmMessage? value))
         {
             var form = value;
             if (form.Created)
@@ -157,7 +158,7 @@ public partial class frmMain : Form
             }
             else
             {
-                form = new frmMessage(toClient);
+                form = new FrmMessage(toClient);
                 _privateMessageFormList[clientId] = form;
                 form.Show();
             }
@@ -165,7 +166,7 @@ public partial class frmMain : Form
         }
         else
         {
-            var form = new frmMessage(toClient);
+            var form = new FrmMessage(toClient);
             _privateMessageFormList.Add(clientId, form);
             form.Show();
             return form;
