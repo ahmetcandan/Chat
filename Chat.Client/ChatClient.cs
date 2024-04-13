@@ -103,9 +103,10 @@ public class ChatClient
 
     public bool SendMessage(string message)
     {
-        if (SendCommand(Cmd.Message, JsonConvert.SerializeObject(new Message(ClientId, message))))
+        var _message = new Message(ClientId, message);
+        if (SendCommand(Cmd.Message, JsonConvert.SerializeObject(_message)))
         {
-            NewMessageReceivedTrigger(new Message(ClientId, message));
+            NewMessageReceivedTrigger(_message);
             return true;
         }
         return false;
@@ -139,12 +140,12 @@ public class ChatClient
         {
             if (BlockStatus && cmd == Cmd.Message)
                 return false;
-            string result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
+            string result = JsonConvert.SerializeObject(new Command(cmd, content));
             _binaryWriter.Write(result);
             _networkStream.Flush();
             return true;
         }
-        catch (Exception)
+        catch
         {
             return false;
         }
@@ -157,15 +158,10 @@ public class ChatClient
             try
             {
                 string receivedMessage = _binaryReader.ReadString();
-                try
-                {
-                    string result = receivedMessage;
-                    Command command = JsonConvert.DeserializeObject<Command>(result);
-                    ReceivedCommand(command);
-                }
-                catch { }
+                Command command = JsonConvert.DeserializeObject<Command>(receivedMessage);
+                ReceivedCommand(command);
             }
-            catch (Exception)
+            catch
             {
                 break;
             }

@@ -2,6 +2,11 @@
 
 public class Message
 {
+    public Message()
+    {
+        
+    }
+
     public Message(long from, long to, byte[] encryptContent)
     {
         From = from;

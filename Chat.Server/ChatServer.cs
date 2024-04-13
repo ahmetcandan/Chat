@@ -286,12 +286,12 @@ public class ChatServer
         {
             try
             {
-                string _result = JsonConvert.SerializeObject(new Command { Cmd = cmd, Content = content });
+                string _result = JsonConvert.SerializeObject(new Command(cmd, content));
                 _binaryWriter.Write(_result);
                 _networkStram.Flush();
                 return true;
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
@@ -304,16 +304,10 @@ public class ChatServer
                 try
                 {
                     string receivedMessage = _binaryReader.ReadString();
-
-                    try
-                    {
-                        string result = receivedMessage;
-                        Command command = JsonConvert.DeserializeObject<Command>(result);
-                        ReceivedCommand(command);
-                    }
-                    catch { }
+                    Command command = JsonConvert.DeserializeObject<Command>(receivedMessage);
+                    ReceivedCommand(command);
                 }
-                catch (Exception)
+                catch
                 {
                     break;
                 }
