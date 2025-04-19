@@ -16,6 +16,6 @@ public static class RSA
     {
         var rsa = new RSACryptoServiceProvider();
         rsa.FromXmlString(publicKey);
-        return rsa.Encrypt(Encoding.UTF8.GetBytes(message), false).ToArray();
+        return [.. rsa.Encrypt(Encoding.UTF8.GetBytes(message), false)];
     }
 }

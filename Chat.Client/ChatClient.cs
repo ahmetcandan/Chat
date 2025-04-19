@@ -51,7 +51,6 @@ public class ChatClient
         var rsa = new RSACryptoServiceProvider();
         _privateKey = rsa.ToXmlString(true);
         _publicKey = rsa.ToXmlString(false);
-        Nick = nick;
         ServerIPAddress = serverIPAddress;
         ServerPort = serverPort;
         ClientIPAddress = clientIPAddress;
