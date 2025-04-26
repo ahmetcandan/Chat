@@ -54,6 +54,7 @@ public class ChatClient
         ServerIPAddress = serverIPAddress;
         ServerPort = serverPort;
         ClientIPAddress = clientIPAddress;
+        Nick = nick;
     }
 
     public bool Connect()

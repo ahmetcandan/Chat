@@ -55,7 +55,7 @@ public partial class FrmLogin : Form
             try
             {
                 string hostName = Dns.GetHostName();
-                var addressList = Dns.GetHostByName(hostName).AddressList;
+                var addressList = Dns.GetHostEntry(hostName).AddressList;
                 Session.Client = new ChatClient(TxtIPAddress.Text, _portNo, TxtNick.Text, addressList.Length > 0 ? addressList[0].ToString() : hostName);
                 if (Session.Client.Connect())
                 {
